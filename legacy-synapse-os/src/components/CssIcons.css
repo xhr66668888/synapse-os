@@ -1,0 +1,169 @@
+/* CSS Icons - 通用 CSS 图标库 */
+
+/* 通用图标基类 */
+.icon-css {
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+}
+
+/* 箭头 -> */
+.icon-arrow-right {
+    width: 6px;
+    height: 6px;
+    border-top: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(45deg);
+    margin-left: 2px;
+    margin-bottom: 1px;
+}
+
+/* 购物车空状态 */
+.icon-cart-empty {
+    display: inline-block;
+    width: 48px;
+    height: 40px;
+    border: 4px solid #ccc;
+    border-radius: 4px;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.icon-cart-empty::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 12px;
+    border: 4px solid #ccc;
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+}
+
+.icon-cart-empty::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 6px;
+    width: 8px;
+    height: 8px;
+    background: #ccc;
+    border-radius: 50%;
+    box-shadow: 24px 0 0 #ccc;
+}
+
+/* 播放控制 */
+.icon-play {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 0 8px 14px;
+    border-color: transparent transparent transparent currentColor;
+}
+
+.icon-pause {
+    width: 14px;
+    height: 16px;
+    border-left: 4px solid currentColor;
+    border-right: 4px solid currentColor;
+}
+
+.icon-prev {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 6px 6px 0;
+    border-color: transparent currentColor transparent transparent;
+    position: relative;
+}
+
+.icon-prev::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -8px;
+    width: 2px;
+    height: 12px;
+    background: currentColor;
+}
+
+.icon-next {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 0 6px 6px;
+    border-color: transparent transparent transparent currentColor;
+    position: relative;
+}
+
+.icon-next::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    width: 2px;
+    height: 12px;
+    background: currentColor;
+}
+
+/* 加号 + */
+.icon-plus {
+    width: 14px;
+    height: 14px;
+    position: relative;
+}
+
+.icon-plus::before,
+.icon-plus::after {
+    content: '';
+    position: absolute;
+    background: currentColor;
+}
+
+.icon-plus::before {
+    top: 6px;
+    left: 0;
+    width: 14px;
+    height: 2px;
+}
+
+.icon-plus::after {
+    top: 0;
+    left: 6px;
+    width: 2px;
+    height: 14px;
+}
+
+/* 减号 - */
+.icon-minus {
+    width: 14px;
+    height: 2px;
+    background: currentColor;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* 关闭 X */
+.icon-close {
+    width: 16px;
+    height: 16px;
+    position: relative;
+}
+
+.icon-close::before,
+.icon-close::after {
+    content: '';
+    position: absolute;
+    top: 7px;
+    left: 0;
+    width: 16px;
+    height: 2px;
+    background: currentColor;
+    transform: rotate(45deg);
+}
+
+.icon-close::after {
+    transform: rotate(-45deg);
+}

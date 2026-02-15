@@ -1,0 +1,353 @@
+/* 桌位管理页面样式 */
+
+.tables-page .page-subtitle {
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.tables-page .highlight {
+    color: #34C759;
+    font-weight: 600;
+}
+
+/* 统计卡片 */
+.table-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon.available {
+    background: linear-gradient(135deg, #34C759, #30D158);
+}
+
+.stat-icon.occupied {
+    background: linear-gradient(135deg, #007AFF, #5856D6);
+}
+
+.stat-icon.reserved {
+    background: linear-gradient(135deg, #FF9500, #FF3B30);
+}
+
+.stat-icon.turnover {
+    background: linear-gradient(135deg, #AF52DE, #5856D6);
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+/* 布局 */
+.tables-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+}
+
+/* 餐厅布局图 */
+.floor-plan {
+    padding: 24px;
+}
+
+.floor-plan .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.floor-plan h3 {
+    margin: 0;
+}
+
+.legend {
+    display: flex;
+    gap: 16px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+/* 桌位网格 */
+.floor-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.floor-table {
+    aspect-ratio: 1;
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.floor-table:hover {
+    transform: scale(1.05);
+}
+
+.floor-table.selected {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.2);
+}
+
+.floor-table.available {
+    background: rgba(52, 199, 89, 0.1);
+    border-color: rgba(52, 199, 89, 0.3);
+}
+
+.floor-table.occupied {
+    background: rgba(0, 122, 255, 0.1);
+    border-color: rgba(0, 122, 255, 0.3);
+}
+
+.floor-table.reserved {
+    background: rgba(255, 149, 0, 0.1);
+    border-color: rgba(255, 149, 0, 0.3);
+}
+
+.floor-table.cleaning {
+    background: rgba(142, 142, 147, 0.1);
+    border-color: rgba(142, 142, 147, 0.3);
+}
+
+.table-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.table-capacity {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.table-time {
+    position: absolute;
+    bottom: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* 桌位详情 */
+.table-detail {
+    padding: 20px;
+}
+
+.table-detail.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.detail-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.detail-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.info-row span:first-child {
+    color: var(--text-muted);
+}
+
+.info-row span:last-child {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.order-link {
+    color: var(--primary) !important;
+    cursor: pointer;
+}
+
+.detail-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* 等位列表 */
+.waitlist {
+    padding: 20px;
+    margin-top: 16px;
+}
+
+.waitlist .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.waitlist h3 {
+    margin: 0;
+}
+
+.badge {
+    background: var(--primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.waitlist-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.waitlist-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.waitlist-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.waitlist-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.waitlist-party {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.waitlist-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.waitlist-time {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.notified-badge {
+    font-size: 11px;
+    padding: 2px 6px;
+    background: rgba(52, 199, 89, 0.1);
+    color: #34C759;
+    border-radius: 4px;
+}
+
+/* 响应式 */
+@media (max-width: 1200px) {
+    .tables-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .side-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .waitlist {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .table-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .floor-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .side-panel {
+        grid-template-columns: 1fr;
+    }
+}
