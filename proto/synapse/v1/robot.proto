@@ -1,0 +1,132 @@
+// ==========================================
+// Synapse OS — 机器人控制服务 Proto
+// Robot Controller gRPC API 定义
+//
+// 📌 此 proto 由中美双方团队共同维护
+// 📌 C++ 实现: services/robot-controller/ (中国团队)
+// 📌 Go 调用方: services/gateway/ (美国团队)
+// ==========================================
+
+syntax = "proto3";
+
+package synapse.v1;
+
+option go_package = "github.com/panshakerservices/synapse-os/proto/synapse/v1";
+
+import "synapse/v1/common.proto";
+
+// 机器人控制服务
+service RobotControllerService {
+  // 发送烹饪任务
+  rpc StartCookingTask(CookingTaskRequest) returns (CookingTaskResponse);
+
+  // 紧急停止
+  rpc EmergencyStop(EmergencyStopRequest) returns (OperationResult);
+
+  // 获取机器人状态
+  rpc GetRobotStatus(GetRobotStatusRequest) returns (RobotStatusResponse);
+
+  // 实时状态流 (Server-Side Streaming)
+  // 前端通过此接口实时监控机器人状态
+  rpc StreamRobotStatus(GetRobotStatusRequest) returns (stream RobotStatusResponse);
+
+  // 获取烹饪任务队列
+  rpc ListCookingTasks(ListCookingTasksRequest) returns (ListCookingTasksResponse);
+}
+
+// 机器人状态枚举
+enum RobotState {
+  ROBOT_STATE_UNSPECIFIED = 0;
+  ROBOT_STATE_OFFLINE = 1;         // 离线
+  ROBOT_STATE_IDLE = 2;            // 空闲
+  ROBOT_STATE_COOKING = 3;         // 烹饪中
+  ROBOT_STATE_CLEANING = 4;        // 清洗中
+  ROBOT_STATE_ERROR = 5;           // 故障
+  ROBOT_STATE_EMERGENCY_STOP = 6;  // 紧急停止
+}
+
+// 烹饪任务请求
+message CookingTaskRequest {
+  string order_id = 1;             // 关联订单 ID
+  string menu_item_id = 2;         // 菜品 ID
+  string menu_item_name = 3;       // 菜品名称 (显示用)
+  string recipe_id = 4;            // 食谱 ID
+
+  // 烹饪参数
+  double oil_temperature = 5;      // 目标油温 (°C)
+  int32 heat_level = 6;            // 火力等级 (1-10)
+  int32 cook_duration_sec = 7;     // 烹饪时间 (秒)
+
+  // 口味调整 (来自 taste-engine)
+  string user_id = 8;              // 用户 ID (用于口味个性化)
+  TasteAdjustment taste = 9;       // 口味调整参数
+}
+
+// 口味调整参数
+// 📌 与 taste-engine 联动
+message TasteAdjustment {
+  double salt_level = 1;           // 咸度 (0.0-1.0, 0.5=标准)
+  double sweet_level = 2;          // 甜度
+  double spicy_level = 3;          // 辣度
+  double oil_level = 4;            // 油量
+  double sour_level = 5;           // 酸度
+}
+
+// 烹饪任务响应
+message CookingTaskResponse {
+  string task_id = 1;
+  bool accepted = 2;
+  string message = 3;
+  int32 estimated_time_sec = 4;    // 预计完成时间
+  int32 queue_position = 5;        // 队列位置
+}
+
+// 紧急停止请求
+message EmergencyStopRequest {
+  string reason = 1;               // 停止原因
+}
+
+// 机器人状态查询
+message GetRobotStatusRequest {
+  string robot_id = 1;             // 机器人 ID (多机器人场景)
+}
+
+// 机器人状态响应
+message RobotStatusResponse {
+  string robot_id = 1;
+  RobotState state = 2;
+
+  // 遥测数据
+  double current_temperature = 3;  // 当前温度 (°C)
+  double target_temperature = 4;   // 目标温度
+  int32 current_heat_level = 5;    // 当前火力
+  double position_x = 6;
+  double position_y = 7;
+  double position_z = 8;
+
+  // 当前任务
+  string current_task_id = 9;
+  string current_dish_name = 10;
+  int32 task_progress_pct = 11;    // 进度百分比 (0-100)
+
+  string error_message = 12;       // 错误信息
+  Timestamp updated_at = 13;
+}
+
+// 任务列表
+message ListCookingTasksRequest {
+  string robot_id = 1;
+}
+
+message ListCookingTasksResponse {
+  repeated CookingTask tasks = 1;
+}
+
+message CookingTask {
+  string task_id = 1;
+  string order_id = 2;
+  string menu_item_name = 3;
+  string status = 4;               // queued / cooking / done / failed
+  int32 estimated_time_sec = 5;
+  Timestamp created_at = 6;
+}

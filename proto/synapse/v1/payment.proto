@@ -1,0 +1,69 @@
+// ==========================================
+// Synapse OS — 支付服务 Proto
+// Payment Engine gRPC API
+// ==========================================
+
+syntax = "proto3";
+
+package synapse.v1;
+
+option go_package = "github.com/panshakerservices/synapse-os/proto/synapse/v1";
+
+import "synapse/v1/common.proto";
+
+service PaymentService {
+  rpc CreatePayment(CreatePaymentRequest) returns (PaymentResponse);
+  rpc GetPayment(GetPaymentRequest) returns (PaymentResponse);
+  rpc RefundPayment(RefundRequest) returns (PaymentResponse);
+  rpc ListPayments(ListPaymentsRequest) returns (ListPaymentsResponse);
+}
+
+enum PaymentMethod {
+  PAYMENT_METHOD_UNSPECIFIED = 0;
+  PAYMENT_METHOD_CASH = 1;
+  PAYMENT_METHOD_CARD = 2;        // Stripe
+  PAYMENT_METHOD_DIGITAL_WALLET = 3; // Apple Pay / Google Pay
+  PAYMENT_METHOD_WECHAT = 4;      // 微信支付 🔲 待实现
+  PAYMENT_METHOD_ALIPAY = 5;      // 支付宝 🔲 待实现
+}
+
+enum PaymentStatus {
+  PAYMENT_STATUS_UNSPECIFIED = 0;
+  PAYMENT_STATUS_PENDING = 1;
+  PAYMENT_STATUS_COMPLETED = 2;
+  PAYMENT_STATUS_FAILED = 3;
+  PAYMENT_STATUS_REFUNDED = 4;
+}
+
+message CreatePaymentRequest {
+  string order_id = 1;
+  Money amount = 2;
+  Money tip = 3;
+  PaymentMethod method = 4;
+  string restaurant_id = 5;
+}
+
+message PaymentResponse {
+  string payment_id = 1;
+  string order_id = 2;
+  Money amount = 3;
+  PaymentMethod method = 4;
+  PaymentStatus status = 5;
+  string transaction_id = 6;      // 第三方交易 ID
+  Timestamp created_at = 7;
+}
+
+message GetPaymentRequest { string payment_id = 1; }
+message RefundRequest {
+  string payment_id = 1;
+  Money refund_amount = 2;
+  string reason = 3;
+}
+message ListPaymentsRequest {
+  string restaurant_id = 1;
+  PaginationRequest pagination = 2;
+}
+message ListPaymentsResponse {
+  repeated PaymentResponse payments = 1;
+  PaginationResponse pagination = 2;
+}

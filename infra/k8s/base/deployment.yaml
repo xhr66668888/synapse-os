@@ -1,0 +1,292 @@
+# ==========================================
+# Synapse OS — K8s 基础部署清单
+# 命名空间 + 核心服务部署
+# ==========================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: synapse-os
+  labels:
+    app: synapse-os
+
+---
+
+# ==========================================
+# Go API Gateway
+# ==========================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: synapse-os
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: acrsynapseos.azurecr.io/gateway:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: jwt-secret
+            - name: ORDER_SERVICE_ADDR
+              value: "order-service:50051"
+            - name: MENU_SERVICE_ADDR
+              value: "menu-service:50051"
+            - name: TABLE_SERVICE_ADDR
+              value: "table-service:50051"
+            - name: PAYMENT_ENGINE_ADDR
+              value: "payment-engine:50052"
+            - name: EVENT_BUS_ADDR
+              value: "event-bus:50053"
+            - name: ROBOT_CONTROLLER_ADDR
+              value: "robot-controller:50054"
+            - name: AI_SERVICE_URL
+              value: "http://ai-service:8000"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  namespace: synapse-os
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: gateway
+
+---
+
+# ==========================================
+# Go Order Service (示例, 其他 Go 服务类似)
+# ==========================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: synapse-os
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: acrsynapseos.azurecr.io/order-service:latest
+          ports:
+            - containerPort: 50051
+              name: grpc
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: database-url
+            - name: REDIS_ADDR
+              value: "redis:6379"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "250m"
+              memory: "128Mi"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: synapse-os
+spec:
+  ports:
+    - port: 50051
+      targetPort: 50051
+      protocol: TCP
+  selector:
+    app: order-service
+
+---
+
+# ==========================================
+# Rust 支付引擎
+# ==========================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-engine
+  namespace: synapse-os
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payment-engine
+  template:
+    metadata:
+      labels:
+        app: payment-engine
+    spec:
+      containers:
+        - name: payment-engine
+          image: acrsynapseos.azurecr.io/payment-engine:latest
+          ports:
+            - containerPort: 50052
+              name: grpc
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: database-url
+            - name: STRIPE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: stripe-api-key
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "16Mi"
+            limits:
+              cpu: "250m"
+              memory: "64Mi"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-engine
+  namespace: synapse-os
+spec:
+  ports:
+    - port: 50052
+      targetPort: 50052
+  selector:
+    app: payment-engine
+
+---
+
+# ==========================================
+# C++ 机器人控制器
+# 📌 由中国团队部署和维护
+# ==========================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: robot-controller
+  namespace: synapse-os
+  annotations:
+    maintained-by: "中国硬件团队"
+spec:
+  replicas: 1  # 机器人控制器通常单实例 (与物理设备绑定)
+  selector:
+    matchLabels:
+      app: robot-controller
+  template:
+    metadata:
+      labels:
+        app: robot-controller
+    spec:
+      containers:
+        - name: robot-controller
+          image: acrsynapseos.azurecr.io/robot-controller:latest
+          ports:
+            - containerPort: 50054
+              name: grpc
+          # 如果机器人控制器需要访问物理串口设备:
+          # securityContext:
+          #   privileged: true
+          # volumeMounts:
+          #   - name: serial-device
+          #     mountPath: /dev/ttyUSB0
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "32Mi"
+            limits:
+              cpu: "500m"
+              memory: "128Mi"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: robot-controller
+  namespace: synapse-os
+spec:
+  ports:
+    - port: 50054
+      targetPort: 50054
+  selector:
+    app: robot-controller
+
+---
+
+# ==========================================
+# Secrets (生产环境使用 Azure Key Vault CSI Driver)
+# 🔲 以下为开发模板，生产环境不要提交到 Git
+# ==========================================
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: synapse-secrets
+  namespace: synapse-os
+type: Opaque
+data:
+  # 以下值需要 base64 编码
+  # echo -n "value" | base64
+  jwt-secret: Y2hhbmdlLW1lLWluLXByb2R1Y3Rpb24=
+  database-url: cG9zdGdyZXM6Ly9zeW5hcHNlX2FkbWluOnBhc3N3b3JkQHBzcWwtc3luYXBzZS1vcy5wb3N0Z3Jlcy5kYXRhYmFzZS5henVyZS5jb206NTQzMi9zeW5hcHNlX29z
+  stripe-api-key: ""  # 🔲 待配置

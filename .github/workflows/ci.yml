@@ -1,0 +1,208 @@
+# ==========================================
+# Synapse OS — GitHub Actions CI/CD
+# 主流水线: 构建 → 测试 → 推送镜像 → 部署到 AKS
+# ==========================================
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  ACR_NAME: acrsynapseos
+  AKS_CLUSTER: aks-synapse-os
+  AKS_RESOURCE_GROUP: rg-synapse-os
+
+jobs:
+  # ==========================================
+  # Go 服务 (9 个微服务)
+  # ==========================================
+  go-services:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - gateway
+          - order-service
+          - menu-service
+          - table-service
+          - staff-service
+          - inventory-service
+          - report-service
+          - reservation-service
+          - loyalty-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: 代码检查 (lint)
+        uses: golangci/golangci-lint-action@v4
+        with:
+          working-directory: services/${{ matrix.service }}
+
+      - name: 单元测试
+        run: |
+          cd services/${{ matrix.service }}
+          go test ./... -v -cover
+
+      - name: 构建 Docker 镜像
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker build \
+            -t ${{ env.ACR_NAME }}.azurecr.io/${{ matrix.service }}:${{ github.sha }} \
+            -t ${{ env.ACR_NAME }}.azurecr.io/${{ matrix.service }}:latest \
+            services/${{ matrix.service }}
+
+  # ==========================================
+  # Rust 服务 (3 个)
+  # ==========================================
+  rust-services:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: 代码格式检查
+        run: cargo fmt --all -- --check
+
+      - name: 静态分析 (clippy)
+        run: cargo clippy --workspace -- -D warnings
+
+      - name: 单元测试
+        run: cargo test --workspace
+
+      - name: 构建
+        if: github.ref == 'refs/heads/main'
+        run: cargo build --release --workspace
+
+  # ==========================================
+  # C++ 服务 (3 个 — 中国团队维护)
+  # 📌 注意: C++ CI 需要安装系统依赖
+  # ==========================================
+  cpp-services:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [robot-controller, vision-engine, taste-engine]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装依赖
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential
+          # 🔲 待添加: libgrpc++-dev libprotobuf-dev libopencv-dev
+
+      - name: CMake 配置
+        run: |
+          cd services/${{ matrix.service }}
+          mkdir -p build && cd build
+          cmake ..
+
+      - name: 编译
+        run: |
+          cd services/${{ matrix.service }}/build
+          make -j$(nproc)
+
+  # ==========================================
+  # Python AI 服务
+  # ==========================================
+  python-ai-service:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: |
+          cd services/ai-service
+          pip install -r requirements.txt
+
+      - name: 代码检查 (Ruff)
+        run: |
+          pip install ruff
+          cd services/ai-service
+          ruff check .
+
+      - name: 单元测试
+        run: |
+          cd services/ai-service
+          python -m pytest tests/ -v
+
+  # ==========================================
+  # 前端 (Next.js)
+  # ==========================================
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装依赖
+        run: |
+          cd frontend
+          npm ci
+
+      - name: ESLint 检查
+        run: |
+          cd frontend
+          npm run lint
+
+      - name: TypeScript 类型检查
+        run: |
+          cd frontend
+          npx tsc --noEmit
+
+      - name: 构建
+        run: |
+          cd frontend
+          npm run build
+
+  # ==========================================
+  # 部署到 Azure AKS (仅 main 分支)
+  # ==========================================
+  deploy:
+    needs: [go-services, rust-services, python-ai-service, frontend]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure 登录
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: ACR 登录
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+      - name: 推送镜像到 ACR
+        run: |
+          echo "🔲 镜像推送逻辑待完善"
+
+      - name: 部署到 AKS
+        run: |
+          az aks get-credentials \
+            --resource-group ${{ env.AKS_RESOURCE_GROUP }} \
+            --name ${{ env.AKS_CLUSTER }}
+          kubectl apply -k infra/k8s/overlays/prod/

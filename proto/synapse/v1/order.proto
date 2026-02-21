@@ -1,0 +1,145 @@
+// ==========================================
+// Synapse OS — 订单服务 Proto
+// Order Service gRPC API 定义
+// ==========================================
+
+syntax = "proto3";
+
+package synapse.v1;
+
+option go_package = "github.com/panshakerservices/synapse-os/proto/synapse/v1";
+
+import "synapse/v1/common.proto";
+
+// 订单服务
+service OrderService {
+  // 创建订单
+  rpc CreateOrder(CreateOrderRequest) returns (Order);
+  // 查询订单
+  rpc GetOrder(GetOrderRequest) returns (Order);
+  // 查询订单列表
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse);
+  // 更新订单状态
+  rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (Order);
+  // 取消订单
+  rpc CancelOrder(CancelOrderRequest) returns (OperationResult);
+  // 分单
+  rpc SplitCheck(SplitCheckRequest) returns (SplitCheckResponse);
+}
+
+// 订单类型
+enum OrderType {
+  ORDER_TYPE_UNSPECIFIED = 0;
+  ORDER_TYPE_DINE_IN = 1;     // 堂食
+  ORDER_TYPE_TAKEOUT = 2;     // 外带
+  ORDER_TYPE_DELIVERY = 3;    // 外卖
+}
+
+// 订单状态
+enum OrderStatus {
+  ORDER_STATUS_UNSPECIFIED = 0;
+  ORDER_STATUS_PENDING = 1;     // 待确认
+  ORDER_STATUS_CONFIRMED = 2;   // 已确认
+  ORDER_STATUS_PREPARING = 3;   // 制作中
+  ORDER_STATUS_READY = 4;       // 已完成（待取餐）
+  ORDER_STATUS_COMPLETED = 5;   // 已完成
+  ORDER_STATUS_CANCELLED = 6;   // 已取消
+}
+
+// 订单
+message Order {
+  string id = 1;
+  string restaurant_id = 2;
+  string order_number = 3;
+  OrderType order_type = 4;
+  OrderStatus status = 5;
+  string table_number = 6;
+  string customer_id = 7;
+  repeated OrderItem items = 8;
+  Money subtotal = 9;
+  Money tax = 10;
+  Money tip = 11;
+  Money discount = 12;
+  Money total = 13;
+  string notes = 14;
+  Timestamp created_at = 15;
+  Timestamp updated_at = 16;
+}
+
+// 订单项
+message OrderItem {
+  string id = 1;
+  string menu_item_id = 2;
+  string menu_item_name = 3;
+  int32 quantity = 4;
+  Money unit_price = 5;
+  Money total_price = 6;
+  repeated string modifiers = 7;  // 修饰符 ID 列表
+  string notes = 8;
+  int32 seat_number = 9;          // 座位号 (分单用)
+  int32 course = 10;              // 课程编号 (上菜顺序)
+}
+
+// 创建订单请求
+message CreateOrderRequest {
+  string restaurant_id = 1;
+  OrderType order_type = 2;
+  string table_number = 3;
+  string customer_id = 4;
+  repeated CreateOrderItemRequest items = 5;
+  string notes = 6;
+}
+
+message CreateOrderItemRequest {
+  string menu_item_id = 1;
+  int32 quantity = 2;
+  repeated string modifier_ids = 3;
+  string notes = 4;
+  int32 seat_number = 5;
+  int32 course = 6;
+}
+
+// 查询请求
+message GetOrderRequest {
+  string order_id = 1;
+}
+
+message ListOrdersRequest {
+  string restaurant_id = 1;
+  OrderStatus status_filter = 2;
+  OrderType type_filter = 3;
+  PaginationRequest pagination = 4;
+}
+
+message ListOrdersResponse {
+  repeated Order orders = 1;
+  PaginationResponse pagination = 2;
+}
+
+// 更新状态
+message UpdateOrderStatusRequest {
+  string order_id = 1;
+  OrderStatus new_status = 2;
+}
+
+// 取消
+message CancelOrderRequest {
+  string order_id = 1;
+  string reason = 2;
+}
+
+// 分单
+message SplitCheckRequest {
+  string order_id = 1;
+  enum SplitMethod {
+    SPLIT_BY_SEAT = 0;     // 按座位
+    SPLIT_BY_ITEM = 1;     // 按商品
+    SPLIT_EVEN = 2;         // AA 平分
+  }
+  SplitMethod method = 2;
+  int32 split_count = 3;   // 分成几份 (AA 模式)
+}
+
+message SplitCheckResponse {
+  repeated Order split_orders = 1;
+}

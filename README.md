@@ -1,1166 +1,216 @@
-# Synapse OS 🧠🍽️
+# Synapse OS
 
-> 下一代AI驱动的餐饮操作系统 | Next-Generation AI-Powered Restaurant Operating System
-
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](CHANGELOG.md)
-[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
-[![Next.js](https://img.shields.io/badge/next.js-15.1-black.svg)](https://nextjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109-teal.svg)](https://fastapi.tiangolo.com/)
+> AI-Powered Restaurant Operating System — 下一代 AI 驱动餐饮操作系统
 
 ---
 
-## 📖 目录
+## What is Synapse OS?
 
-- [项目简介](#项目简介)
-- [核心特性](#核心特性)
-- [技术栈](#技术栈)
-- [系统架构](#系统架构)
-- [快速开始](#快速开始)
-- [功能模块](#功能模块)
-- [开发状态](#开发状态)
-- [待办事项](#待办事项)
-- [API文档](#api文档)
-- [部署指南](#部署指南)
-- [贡献指南](#贡献指南)
+**Synapse OS** is a full-stack SaaS platform purpose-built for modern restaurant operations. It unifies point-of-sale, kitchen management, customer engagement, and robotic cooking control into a single system — differentiated by deep AI integration and cooking-robot automation that no competitor offers.
 
----
+**Product tiers:**
 
-## 🎯 项目简介
-
-**Synapse OS** 是一个为现代餐饮企业打造的全栈 SaaS 平台，融合了 **AI 人工智能**、**机器人自动化**和**传统餐饮管理**的最佳实践。
-
-### 愿景 (Vision)
-
-打造餐饮行业的"神经中枢"，通过AI和自动化技术，连接前台点餐、后厨制作、库存管理、客户服务的每一个环节。
-
-### 核心价值主张
-
-- 🤖 **AI驱动**: 智能客服、口味推荐、自动排班
-- 🦾 **机器人集成**: 直接控制烹饪机器人（G-Code指令）
-- 📹 **视觉监控**: 摄像头AI实时监控库存，防止超卖
-- 🎨 **个性化C2M**: 口味数字孪生，为每位客户定制菜品
-- ♿ **无障碍**: 专为听障群体设计的震动交互系统
+| Tier | Codename | Description |
+|------|----------|-------------|
+| **Gold** | The Brain | Full C2M personalization engine — per-user taste profiles, dynamic menus |
+| **Standard** | The Hand | Robot cooking automation — G-Code control, vision-based inventory |
+| **Lite** | The Eye | Software-only SaaS POS — no robot hardware required |
+| **Care** | The Shield | Accessibility mode — haptic/vibration UI for hearing-impaired staff |
 
 ---
 
-## ⭐ 核心特性
+## Tech Stack (Current v0.9)
 
-### 🏪 运营卓越套件 (Operational Excellence)
-
-| 功能 | 状态 | 描述 |
-|------|------|------|
-| **POS系统** | ✅ 已完成 | 完整的收银系统，支持分单、课程管理、多种支付方式 |
-| **桌台管理** | ✅ 已完成 | 可视化桌位布局、状态管理、QR码点餐 |
-| **预订系统** | ✅ 已完成 | 在线预订、等位队列、自动提醒 |
-| **QR码点餐** | ✅ 已完成 | 无需App，扫码即点，实时同步 |
-| **多店管理** | ✅ 已完成 | 组织级管理、跨门店数据汇总、门店调拨 |
-
-### 🤖 硬件 & 自动化 (Hardware & Automation)
-
-| 功能 | 状态 | 描述 |
-|------|------|------|
-| **厨房显示系统 (KDS)** | ✅ 已完成 | 实时订单展示、状态追踪、WebSocket实时通信 |
-| **机器人烹饪控制** | ✅ 已完成 | 直接下发G-Code指令，精准控制油温、翻炒 |
-| **顾客取餐屏幕** | ✅ 已完成 | 大屏叫号系统，美观动画效果 |
-| **自助点餐机** | ✅ 已完成 | 触摸屏友好界面，多语言支持，闲置自动返回 |
-| **视觉库存监控** | ⚠️ 部分完成 | 摄像头AI监控，自动熔断系统（需完善AI模型） |
-
-### 💻 数字体验套件 (Digital Experience)
-
-| 功能 | 状态 | 描述 |
-|------|------|------|
-| **在线订餐** | ⚠️ 部分完成 | 后端支持完整，缺少独立客户端前端 |
-| **QR码点餐** | ✅ 已完成 | 移动端优化，购物车管理 |
-| **品牌网站** | ❌ 未开始 | 需要营销型官网 |
-| **移动App** | ❌ 未开始 | 原生或RN开发计划中 |
-
-### 📈 营销 & 增长套件 (Marketing & Growth)
-
-| 功能 | 状态 | 描述 |
-|------|------|------|
-| **忠诚度计划** | ✅ 已完成 | 5级会员体系、积分系统、奖励商城 |
-| **评价管理** | ✅ 已完成 | 多平台聚合、AI智能回复 |
-| **SMS营销** | ⚠️ 部分完成 | 数据模型完成，需对接SMS供应商API |
-| **礼品卡** | ❌ 未开始 | 计划中 |
-
-### 🧠 AI & 智能功能 (AI & Intelligence)
-
-| 功能 | 状态 | 描述 |
-|------|------|------|
-| **AI智能客服** | ✅ 已完成 | 多Agent协作、任务分解、语音识别 |
-| **口味数字孪生** | ✅ 已完成 | 基于用户ID的个性化口味调整 |
-| **自动排班** | ⚠️ 部分完成 | 数据模型完成，优化算法待实现 |
-| **智能推荐** | ⚠️ 部分完成 | 基础推荐完成，需训练推荐模型 |
-
-### 🔌 第三方集成 (Integrations)
-
-| 集成 | 状态 | 描述 |
-|------|------|------|
-| **外卖平台** | ✅ 已完成 | DoorDash, UberEats, Grubhub 数据模型支持 |
-| **支付网关** | ⚠️ 部分完成 | 数据结构完成，需对接Stripe/Square API |
-| **会计系统** | ❌ 未开始 | QuickBooks集成计划中 |
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | Python 3.11 · FastAPI 0.109 · SQLAlchemy 2.0 (async) · Pydantic v2 |
+| **Frontend** | Next.js 15 · React 19 · TypeScript · Tailwind CSS 3.4 · Zustand · React Query |
+| **Database** | PostgreSQL 14+ (via asyncpg) · Redis 7 (cache/pubsub) |
+| **AI** | OpenAI-compatible SDK (ZhipuAI GLM-4) · Whisper (speech-to-text) |
+| **Infra** | Docker Compose (dev) · Terraform + Azure AKS (prod) |
+| **Robot** | C++ G-Code pipeline → serial/TCP → cooking robot |
 
 ---
 
-## 🛠️ 技术栈
+## Repository Structure
 
-### 后端 (Backend)
-
-#### 核心框架
-```yaml
-语言: Python 3.11+
-Web框架: FastAPI 0.109.2
-ASGI服务器: Uvicorn 0.27.1 (with standard extras)
-API文档: OpenAPI 3.0 (自动生成)
+```
+synapse-os/
+├── services/                   # ⬅ NEW: Microservice monorepo
+│   ├── gateway/                # Go — API Gateway + Auth (Gin)
+│   ├── order-service/          # Go — Order lifecycle (gRPC)
+│   ├── menu-service/           # Go — Menu CRUD
+│   ├── table-service/          # Go — Table management
+│   ├── staff-service/          # Go — Staff & scheduling
+│   ├── inventory-service/      # Go — Stock tracking
+│   ├── report-service/         # Go — Analytics
+│   ├── reservation-service/    # Go — Booking & waitlist
+│   ├── loyalty-service/        # Go — Points & rewards
+│   ├── payment-engine/         # Rust — Payment (Stripe/Square)
+│   ├── event-bus/              # Rust — WebSocket + event routing
+│   ├── analytics-pipeline/     # Rust — Data processing
+│   ├── robot-controller/       # C++ — 🤖 G-Code & machine control (中国团队)
+│   ├── vision-engine/          # C++ — 👁️ CV inventory (中国团队)
+│   ├── taste-engine/           # C++ — 🧂 C2M taste engine (中国团队)
+│   └── ai-service/             # Python — LLM, STT, recommendations
+│
+├── proto/synapse/v1/           # gRPC Protobuf definitions
+│   ├── common.proto            # Shared types (pagination, money)
+│   ├── order.proto             # OrderService (6 RPCs)
+│   ├── robot.proto             # RobotControllerService (5 RPCs)
+│   └── payment.proto           # PaymentService (4 RPCs)
+│
+├── backend/                    # Python/FastAPI (legacy, migrating to Go)
+├── frontend/                   # Next.js 15 (admin + customer UI)
+│
+├── infra/                      # Infrastructure as Code
+│   ├── terraform/              # Azure resources (AKS, PostgreSQL, Redis)
+│   ├── k8s/                    # Kubernetes manifests
+│   └── docker/                 # Per-service Dockerfiles
+│
+├── .github/workflows/ci.yml   # CI/CD (Go/Rust/C++/Python/Frontend)
+├── assets/                     # Brand fonts & images
+├── docs/                       # Marketing materials
+├── Cargo.toml                  # Rust workspace root
+├── docker-compose.yml          # Local dev orchestration
+├── ENGINEERING.md              # ← ENGINEERING MAINTENANCE GUIDE
+└── README.md                   # ← YOU ARE HERE
 ```
 
-#### 数据库 & ORM
-```yaml
-关系数据库: PostgreSQL 14+ (推荐) / SQLite (开发)
-ORM: SQLAlchemy 2.0.25 (async)
-数据库驱动: asyncpg 0.29.0
-数据库迁移: Alembic 1.13.1
-```
-
-#### 缓存 & 队列
-```yaml
-缓存: Redis 5.0.1 (用于会话、实时数据)
-消息队列: Redis Pub/Sub (待升级为 RabbitMQ/Kafka)
-```
-
-#### 认证 & 安全
-```yaml
-JWT: python-jose[cryptography] 3.3.0
-密码哈希: passlib[bcrypt] 1.7.4
-数据验证: Pydantic 2.6.1
-配置管理: pydantic-settings 2.1.0
-邮箱验证: email-validator 2.1.0
-```
-
-#### AI & 机器学习
-```yaml
-LLM接口: OpenAI SDK >= 1.0.0 (兼容智谱AI)
-语音识别: OpenAI Whisper >= 20231117 (可选，需ffmpeg)
-计算机视觉: (待集成 - OpenCV/YOLO)
-推荐算法: (待集成 - scikit-learn/TensorFlow)
-```
-
-#### 工具库
-```yaml
-HTTP客户端: httpx 0.26.0
-环境变量: python-dotenv 1.0.1
-多部分表单: python-multipart 0.0.9
-```
-
-#### 开发 & 测试
-```yaml
-测试框架: pytest 8.0.0
-异步测试: pytest-asyncio 0.23.5
-覆盖率: pytest-cov 4.1.0
-代码格式化: black, isort (建议)
-类型检查: mypy (建议)
-```
+> **Note:** The `backend/` Python/FastAPI server is the current working system (v0.9). Business logic is being progressively migrated to the Go/Rust/C++ services in `services/`. See `ENGINEERING.md` Appendix B for per-file implementation status.
 
 ---
 
-### 前端 (Frontend)
+## Quick Start
 
-#### 核心框架
-```yaml
-框架: Next.js 15.1.0
-渲染: React 19.0.0 (Server Components + Client Components)
-语言: TypeScript 5.6.0
-包管理器: npm (建议升级到 pnpm)
-```
+### Prerequisites
 
-#### UI & 样式
-```yaml
-CSS框架: Tailwind CSS 3.4.0
-组件库: 自研 (基于 Headless UI 模式)
-图标: Lucide React 0.563.0
-图表: Chart.js 4.5.1 + react-chartjs-2 5.3.1
-```
+- Python 3.11+
+- Node.js 18+
+- Docker & Docker Compose (recommended)
+- PostgreSQL 14+ (or use SQLite for local dev)
+- Redis 7+ (optional for local dev)
 
-#### 状态管理
-```yaml
-全局状态: Zustand 5.0.0
-服务器状态: @tanstack/react-query 5.60.0
-表单管理: 自研 (建议引入 React Hook Form)
-```
-
-#### 数据层
-```yaml
-API客户端: 自研 fetch wrapper
-实时通信: WebSocket (原生)
-数据库客户端: @supabase/supabase-js 2.93.2
-```
-
-#### 构建 & 优化
-```yaml
-编译器: SWC (Next.js内置)
-代码分割: 自动 (Next.js动态导入)
-图片优化: Sharp 0.33+ (Next.js Image组件)
-CSS处理: PostCSS 8.4.0 + Autoprefixer 10.4.0
-```
-
-#### 开发工具
-```yaml
-代码检查: ESLint 8.0.0 + eslint-config-next
-类型检查: TypeScript编译器
-截图服务: html2canvas 1.4.1
-```
-
----
-
-### 基础设施 (Infrastructure)
-
-#### 容器化 & 编排
-```yaml
-容器: Docker (Dockerfile已配置)
-编排: Docker Compose (docker-compose.yml)
-生产编排: Kubernetes (待配置)
-```
-
-#### 云服务 (推荐)
-```yaml
-托管数据库: Supabase / AWS RDS / Google Cloud SQL
-对象存储: AWS S3 / Cloudflare R2
-CDN: Cloudflare / AWS CloudFront
-域名: (自定义域名)
-```
-
-#### 监控 & 日志
-```yaml
-APM: (待集成 - Sentry / New Relic)
-日志聚合: (待集成 - ELK Stack / Datadog)
-性能监控: (待集成 - Prometheus + Grafana)
-错误追踪: (待集成 - Sentry)
-```
-
-#### CI/CD
-```yaml
-版本控制: Git
-CI/CD: (待配置 - GitHub Actions / GitLab CI)
-代码质量: (待集成 - SonarQube)
-依赖管理: Dependabot (建议启用)
-```
-
----
-
-### 外部服务集成
-
-#### 支付 (Payment)
-```yaml
-待集成:
-  - Stripe (信用卡/借记卡)
-  - Square (POS硬件集成)
-  - 支付宝/微信支付 (中国市场)
-```
-
-#### 通信 (Communication)
-```yaml
-SMS:
-  - 待集成: Twilio / 阿里云短信 / 腾讯云短信
-Email:
-  - 待集成: SendGrid / AWS SES / Mailgun
-推送通知:
-  - 待集成: Firebase Cloud Messaging / OneSignal
-```
-
-#### 地图 & 定位
-```yaml
-待集成:
-  - Google Maps API (配送路线优化)
-  - 高德地图 (中国市场)
-```
-
-#### AI服务
-```yaml
-当前: 智谱AI (GLM-4)
-待集成:
-  - OpenAI GPT-4
-  - Google Gemini
-  - 本地部署: Ollama / vLLM
-```
-
----
-
-## 🏗️ 系统架构
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         用户层 (User Layer)                      │
-├───────────┬───────────┬──────────┬──────────┬───────────────────┤
-│ 堂食客人   │ 外卖客户   │ 餐厅员工  │ 管理员   │  厨房机器人        │
-│ (QR/Kiosk)│ (Online)  │ (POS)    │ (Admin) │  (Robot Control)  │
-└─────┬─────┴─────┬─────┴────┬─────┴────┬─────┴─────────┬─────────┘
-      │           │          │          │               │
-      ├───────────┴──────────┴──────────┴───────────────┤
-      │                                                   │
-┌─────▼───────────────────────────────────────────────────▼─────┐
-│                   前端层 (Frontend Layer)                      │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
-│  │Next.js   │  │QR码点餐  │  │自助点餐机 │  │取餐屏幕  │     │
-│  │Admin     │  │Mobile    │  │Kiosk     │  │Pickup    │     │
-│  │Dashboard │  │Ordering  │  │Terminal  │  │Display   │     │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘     │
-└───────┼─────────────┼─────────────┼─────────────┼───────────┘
-        │             │             │             │
-        │    ┌────────┴─────────────┴─────────────┴────────┐
-        │    │        WebSocket (实时通信)                  │
-        │    └──────────────────────────────────────────────┘
-        │                          │
-┌───────▼──────────────────────────▼────────────────────────────┐
-│                API网关层 (API Gateway Layer)                   │
-│  ┌──────────────────────────────────────────────────────┐    │
-│  │ FastAPI (ASGI) + Uvicorn                             │    │
-│  │ - OpenAPI 3.0 自动文档                               │    │
-│  │ - JWT认证中间件                                       │    │
-│  │ - CORS配置                                           │    │
-│  │ - 请求限流 (Rate Limiting)                           │    │
-│  └──────────────────────────────────────────────────────┘    │
-└────────────────────────┬──────────────────────────────────────┘
-                         │
-┌────────────────────────▼──────────────────────────────────────┐
-│                业务逻辑层 (Business Logic Layer)               │
-│  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌──────────┐  │
-│  │订单管理   │  │菜单管理   │  │库存管理   │  │支付管理  │  │
-│  │Orders     │  │Menu       │  │Inventory  │  │Payments  │  │
-│  └───────────┘  └───────────┘  └───────────┘  └──────────┘  │
-│  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌──────────┐  │
-│  │预订系统   │  │忠诚度计划 │  │评价管理   │  │员工管理  │  │
-│  │Reservation│  │Loyalty    │  │Reviews    │  │Staff     │  │
-│  └───────────┘  └───────────┘  └───────────┘  └──────────┘  │
-└────────────────────────┬──────────────────────────────────────┘
-                         │
-┌────────────────────────▼──────────────────────────────────────┐
-│                 AI服务层 (AI Service Layer)                    │
-│  ┌───────────────────┐  ┌─────────────────┐                  │
-│  │多Agent协调器       │  │语音识别服务     │                  │
-│  │Multi-Agent        │  │Whisper Service  │                  │
-│  │Coordinator        │  │                 │                  │
-│  └───────────────────┘  └─────────────────┘                  │
-│  ┌───────────────────┐  ┌─────────────────┐                  │
-│  │任务分解器         │  │推荐引擎         │                  │
-│  │Task Decomposer    │  │Recommendation   │                  │
-│  └───────────────────┘  └─────────────────┘                  │
-└────────────────────────┬──────────────────────────────────────┘
-                         │
-┌────────────────────────▼──────────────────────────────────────┐
-│                数据访问层 (Data Access Layer)                  │
-│  ┌──────────────────────────────────────────────────────┐    │
-│  │ SQLAlchemy ORM (Async)                               │    │
-│  │ - Repository Pattern                                 │    │
-│  │ - Unit of Work                                       │    │
-│  └──────────────────────────────────────────────────────┘    │
-└────────────────────────┬──────────────────────────────────────┘
-                         │
-┌────────────────────────▼──────────────────────────────────────┐
-│                 数据存储层 (Data Storage Layer)                │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
-│  │PostgreSQL│  │Redis     │  │S3/R2     │  │Vector DB │     │
-│  │关系数据库│  │缓存/会话 │  │对象存储  │  │(待集成)  │     │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘     │
-└───────────────────────────────────────────────────────────────┘
-                         │
-┌────────────────────────▼──────────────────────────────────────┐
-│                外部集成层 (External Integration Layer)         │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
-│  │支付网关  │  │SMS服务   │  │外卖平台  │  │机器人API │     │
-│  │Payment   │  │SMS       │  │Delivery  │  │Robot     │     │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘     │
-└───────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 🚀 快速开始
-
-### 环境要求
-
-- **Python**: 3.11 或更高
-- **Node.js**: 18.0 或更高
-- **PostgreSQL**: 14+ (或使用 SQLite 进行开发)
-- **Redis**: 7.0+ (可选，用于缓存)
-- **Docker**: 20.10+ (推荐)
-
-### 1. 克隆仓库
+### Option A: Docker (Recommended)
 
 ```bash
 git clone https://github.com/your-org/synapse-os.git
 cd synapse-os
+docker-compose up -d
+
+# Backend API:  http://localhost:8000
+# API Docs:     http://localhost:8000/docs
+# Frontend:     http://localhost:3000
 ```
 
-### 2. 后端设置
+### Option B: Manual Setup
 
 ```bash
+# Backend
 cd backend
-
-# 创建虚拟环境
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 安装依赖
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+cp .env.example .env  # Edit database credentials
+uvicorn app.main:app --reload --port 8000
 
-# 配置环境变量
-cp .env.example .env
-# 编辑 .env 文件，配置数据库连接等
-
-# 运行数据库迁移
-alembic upgrade head
-
-# 启动开发服务器
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-后端将运行在 `http://localhost:8000`  
-API文档: `http://localhost:8000/docs`
-
-### 3. 前端设置
-
-```bash
+# Frontend (new terminal)
 cd frontend
-
-# 安装依赖
 npm install
-
-# 配置环境变量
-cp .env.local.example .env.local
-# 编辑 .env.local，配置 API 地址
-
-# 启动开发服务器
+cp .env.local.example .env.local  # Edit API URL
 npm run dev
 ```
 
-前端将运行在 `http://localhost:3000`
+---
 
-### 4. 使用 Docker (推荐生产环境)
+## Feature Status Matrix
 
-```bash
-# 启动所有服务
-docker-compose up -d
+### ✅ Implemented & Functional
 
-# 查看日志
-docker-compose logs -f
+| Module | Backend | Frontend | Notes |
+|--------|---------|----------|-------|
+| POS System | ✅ Full CRUD | ✅ Full UI | Split checks, course management, tips |
+| Menu Management | ✅ | ✅ | Categories, items, modifiers |
+| Order Management | ✅ | ✅ | All order types, status tracking |
+| Table Management | ✅ | ✅ | Visual layout, QR code generation |
+| KDS (Kitchen Display) | ✅ | ✅ | WebSocket real-time, timers |
+| Reservations | ✅ | ✅ | Booking + waitlist queue |
+| Staff Management | ✅ | ✅ | Roles, schedules |
+| Inventory | ✅ | ✅ | Stock tracking, transactions |
+| Reports / Analytics | ✅ | ✅ | Revenue, sales, trends |
+| QR Code Ordering | ✅ | ✅ | Mobile-optimized guest ordering |
+| Kiosk (Self-Order) | ✅ | ✅ | Touch-friendly, auto-reset |
+| Pickup Screen | ✅ | ✅ | Large display, animations |
+| Robot Cooking Control | ✅ API | ✅ UI | G-Code generation, status monitoring |
+| AI Customer Service | ✅ Multi-agent | ⚠️ No chat UI | Task decomposition, Whisper STT |
+| Loyalty Program | ✅ Full | ⚠️ Partial UI | 5-tier system, points, rewards |
 
-# 停止服务
-docker-compose down
-```
+### ⚠️ Data Model Only (API Stubs — No Live Integration)
+
+| Module | What Exists | What's Missing |
+|--------|------------|----------------|
+| **Payment Processing** | DB models, API stubs | Stripe/Square API integration |
+| **SMS Marketing** | Campaign/log models | Twilio/cloud SMS provider |
+| **Multi-Location Mgmt** | Organization/Location models | Full REST API endpoints |
+| **Review Aggregation** | Review models, AI reply logic | Google/Yelp API connectors |
+| **Visual Inventory (CV)** | Conceptual design | OpenCV/YOLO model, camera driver |
+| **Scheduling Optimization** | Shift models | Optimization algorithm |
+| **AI Recommendations** | Basic logic | ML model training pipeline |
+
+### ❌ Not Started
+
+| Module | Priority |
+|--------|----------|
+| Mobile App (iOS/Android) | 🔴 High |
+| Offline-First / Local DB Sync | 🔴 High |
+| Brand Marketing Website | 🟡 Medium |
+| Gift Card System | 🟡 Medium |
+| Accounting Integration (QuickBooks) | 🟢 Low |
+| Supply Chain Management | 🟢 Low |
 
 ---
 
-## 📦 功能模块详解
+## API Overview
 
-### 1. POS系统 (Point of Sale)
+Base URL: `http://localhost:8000/api/v1`
 
-**路径**: `/frontend/app/pos` | `/backend/app/api/v1/orders.py`
+| Prefix | Tag | Description |
+|--------|-----|-------------|
+| `/auth` | 认证 | Login, register, JWT tokens |
+| `/menu` | 菜单 | Menu categories & items |
+| `/modifiers` | 修饰符 | Menu item modifiers |
+| `/orders` | 订单 | Order lifecycle management |
+| `/payments` | 支付 | Payment records (stub) |
+| `/inventory` | 库存 | Stock tracking |
+| `/schedule` | 排班 | Staff scheduling |
+| `/reports` | 报表 | Business analytics |
+| `/tables` | 桌位 | Table & QR code management |
+| `/staff` | 员工 | Staff CRUD |
+| `/robot` | 机器人 | Robot cooking control |
+| `/reservations` | 预订 | Reservations & waitlist |
+| `/loyalty` | 忠诚度 | Loyalty program & rewards |
+| `/agent/*` | AI Agent | Multi-agent AI services |
 
-**功能**:
-- ✅ 菜品选择和修饰符配置
-- ✅ 购物车管理
-- ✅ 分单功能 (按座位、按商品、平均分)
-- ✅ 课程管理 (前菜、主菜、甜点分阶段上菜)
-- ✅ 多种支付方式 (现金、信用卡、移动支付)
-- ✅ 小费计算
-- ✅ 折扣和优惠券
-- ⚠️ 支付网关集成 (数据结构完成，需对接API)
-
-**待完成**:
-- [ ] Stripe/Square 支付集成
-- [ ] 打印机驱动集成
-- [ ] 离线模式支持
-
-### 2. 厨房显示系统 (KDS)
-
-**路径**: `/frontend/app/kds` | WebSocket实时通信
-
-**功能**:
-- ✅ 实时订单展示
-- ✅ 订单状态更新 (preparing, ready, completed)
-- ✅ 计时器显示
-- ✅ 优先级标识
-- ✅ WebSocket实时通信
-- ⚠️ 机器人状态同步 (部分完成)
-
-**待完成**:
-- [ ] 打印到厨房打印机
-- [ ] 声音/震动提醒
-- [ ] 多厨房分区支持
-
-### 3. QR码点餐系统
-
-**路径**: `/frontend/app/qr-order/[qrCode]` | `/backend/app/api/v1/tables.py`
-
-**功能**:
-- ✅ 为桌位生成唯一QR码
-- ✅ 扫码浏览菜单
-- ✅ 移动端优化界面
-- ✅ 购物车管理
-- ✅ 订单提交
-- ❌ 在线支付集成 (待开发)
-
-**待完成**:
-- [ ] 微信/支付宝扫码支付
-- [ ] 订单状态实时推送
-- [ ] 评价引导
-
-### 4. 预订与等位系统
-
-**路径**: `/frontend/app/reservations` | `/backend/app/api/v1/reservations.py`
-
-**数据模型**: 
-- `Reservation` (预订表)
-- `WaitlistEntry` (等位队列)
-
-**功能**:
-- ✅ 在线预订创建
-- ✅ 预订状态管理
-- ✅ 等位队列管理
-- ✅ 可用性检查
-- ✅ 为预订分配桌位
-- ⚠️ SMS/Email提醒 (数据结构完成，需对接服务商)
-
-**待完成**:
-- [ ] Twilio SMS集成
-- [ ] 邮件通知集成
-- [ ] 第三方预订平台集成 (OpenTable等)
-
-### 5. 忠诚度与会员系统
-
-**路径**: `/frontend/app/customers` | `/backend/app/api/v1/loyalty.py`
-
-**数据模型**:
-- `CustomerLoyalty` (客户档案)
-- `PointTransaction` (积分交易)
-- `Reward` (奖励)
-- `LoyaltyProgram` (计划配置)
-
-**功能**:
-- ✅ 5级会员体系 (铜银金铂金钻石)
-- ✅ 消费自动获得积分
-- ✅ 积分兑换奖励
-- ✅ 推荐奖励系统
-- ✅ 生日营销
-- ✅ 会员排行榜
-- ⚠️ 前端会员中心 (待完善UI)
-
-**待完成**:
-- [ ] 移动端会员卡
-- [ ] 积分过期提醒
-- [ ] 会员专属优惠
-
-### 6. 多店管理
-
-**路径**: `/frontend/app/multi-location` | `/backend/app/models/organization.py`
-
-**数据模型**:
-- `Organization` (组织)
-- `Location` (门店)
-- `OrganizationUser` (组织用户)
-- `LocationTransfer` (调拨记录)
-
-**功能**:
-- ✅ 组织级管理
-- ✅ 多门店数据汇总
-- ✅ 门店间调拨
-- ✅ 区域经理权限
-- ⚠️ API端点 (待实现)
-
-**待完成**:
-- [ ] 多店管理API端点实现
-- [ ] 跨门店库存调拨
-- [ ] 连锁店报表
-
-### 7. 评价管理与SMS营销
-
-**路径**: `/frontend/app/reviews` | `/backend/app/models/review.py`
-
-**数据模型**:
-- `Review` (评价)
-- `ReviewRequest` (评价请求)
-- `SMSCampaign` (营销活动)
-- `SMSLog` (发送日志)
-
-**功能**:
-- ✅ 多平台评价聚合 (数据模型)
-- ✅ AI智能回复
-- ✅ 评价统计
-- ✅ SMS营销活动管理 (数据模型)
-- ❌ 实际SMS发送功能 (待集成)
-
-**待完成**:
-- [ ] 大众点评/美团API集成
-- [ ] Twilio/阿里云短信集成
-- [ ] 自动好评请求触发器
-
-### 8. AI智能客服
-
-**路径**: `/backend/app/services/` (多个Agent服务)
-
-**功能**:
-- ✅ 多Agent协作架构
-- ✅ 任务分解器
-- ✅ 语音识别 (Whisper)
-- ✅ 智能推荐
-- ⚠️ UI界面 (待开发)
-
-**待完成**:
-- [ ] 客服前端聊天界面
-- [ ] 对话历史记录
-- [ ] 训练专属客服模型
-
-### 9. 机器人烹饪控制
-
-**路径**: `/backend/app/api/v1/robot.py`
-
-**功能**:
-- ✅ G-Code指令生成
-- ✅ 机器人状态监控
-- ✅ 任务队列管理
-- ⚠️ 实际机器人通信 (需硬件对接)
-
-**待完成**:
-- [ ] 真实机器人硬件对接
-- [ ] 机器人异常处理
-- [ ] 烹饪参数优化
-
-### 10. 视觉库存监控
-
-**路径**: `/backend/app/services/` (待完善)
-
-**功能**:
-- ⚠️ 摄像头接入
-- ⚠️ 物品识别模型
-- ⚠️ 库存自动扣减
-- ⚠️ 超卖熔断
-
-**待完成**:
-- [ ] OpenCV/YOLO模型集成
-- [ ] 摄像头驱动配置
-- [ ] 实时识别算法优化
-- [ ] 熔断触发机制
+Interactive API docs: `http://localhost:8000/docs` (Swagger UI)
 
 ---
 
-## 🔧 开发状态
+## Environment Variables
 
-### ✅ 已完成 (Production Ready)
+See `backend/.env.example` and `frontend/.env.local.example` for complete reference.
 
-| 模块 | 完成度 | 说明 |
-|------|--------|------|
-| POS系统 | 95% | 核心功能完整，缺支付集成 |
-| 桌台管理 | 100% | 完整可用 |
-| 菜单管理 | 100% | 完整可用 |
-| 订单管理 | 100% | 完整可用 |
-| KDS | 90% | 核心功能完整，缺打印集成 |
-| QR码点餐 | 90% | 核心功能完整，缺支付集成 |
-| 预订系统 | 90% | 核心功能完整，缺通知集成 |
-| 忠诚度系统 | 95% | 后端完整，前端待完善 |
-| 多店管理 | 80% | 数据模型完整，API待实现 |
-| 自助点餐机 | 100% | 完整可用 |
-| 取餐屏幕 | 100% | 完整可用 |
-| 评价管理 | 85% | 核心功能完整，缺第三方集成 |
+**Critical backend vars:**
 
-### ⚠️ 部分完成 (需完善)
-
-| 模块 | 完成度 | 待办事项 |
-|------|--------|----------|
-| 支付系统 | 40% | 需集成 Stripe/Square API |
-| SMS营销 | 50% | 需集成 Twilio/阿里云短信 |
-| AI客服UI | 30% | 需开发前端聊天界面 |
-| 视觉监控 | 20% | 需集成计算机视觉模型 |
-| 排班系统 | 60% | 需实现优化算法 |
-| 推荐引擎 | 50% | 需训练推荐模型 |
-
-### ❌ 未开始 (计划中)
-
-| 模块 | 优先级 | 说明 |
-|------|--------|------|
-| 移动App | 高 | React Native / Flutter |
-| 品牌官网 | 中 | 营销型网站 |
-| 礼品卡 | 中 | 完整礼品卡系统 |
-| 会计集成 | 低 | QuickBooks/Xero |
-| 供应链管理 | 低 | 采购和供应商管理 |
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | PostgreSQL async connection string |
+| `SECRET_KEY` | Yes | JWT signing key (change in production!) |
+| `REDIS_URL` | No | Redis connection (defaults to localhost) |
+| `ZHIPU_API_KEY` | For AI | ZhipuAI API key |
+| `STRIPE_SECRET_KEY` | Future | Stripe payment integration |
+| `TWILIO_ACCOUNT_SID` | Future | SMS notifications |
 
 ---
 
-## 📋 待办事项 (TODO)
+## License
 
-### 🔴 高优先级 (本月完成)
-
-#### 支付集成
-```
-[ ] 集成 Stripe API
-    - [ ] 创建 Stripe 账户
-    - [ ] 实现信用卡支付流程
-    - [ ] 添加退款功能
-    - [ ] 处理 Webhook 事件
-    - [ ] 前端支付表单组件
-```
-
-#### SMS/Email 通知
-```
-[ ] 集成 Twilio SMS
-    - [ ] 注册 Twilio 账户
-    - [ ] 实现短信发送服务
-    - [ ] 创建消息模板
-    - [ ] 添加发送日志
-[ ] 集成 SendGrid Email
-    - [ ] 配置 SendGrid API
-    - [ ] 邮件模板设计
-    - [ ] 预订确认邮件
-    - [ ] 营销邮件功能
-```
-
-#### 多店管理API
-```
-[ ] 实现组织管理API端点
-    - [ ] POST /api/v1/organizations/ - 创建组织
-    - [ ] GET /api/v1/organizations/{id} - 获取组织
-    - [ ] GET /api/v1/organizations/{id}/locations - 获取门店列表
-    - [ ] POST /api/v1/organizations/{id}/locations - 添加门店
-    - [ ] GET /api/v1/locations/{id}/stats - 门店统计
-    - [ ] POST /api/v1/transfers/ - 创建调拨单
-```
-
-### 🟡 中优先级 (本季度完成)
-
-#### AI客服前端界面
-```
-[ ] 设计客服聊天UI
-    - [ ] 聊天窗口组件
-    - [ ] 消息气泡样式
-    - [ ] 语音输入按钮
-    - [ ] 快捷回复模板
-[ ] WebSocket实时通信
-    - [ ] 建立WebSocket连接
-    - [ ] 消息实时推送
-    - [ ] 连接状态管理
-```
-
-#### 视觉库存监控
-```
-[ ] 集成计算机视觉模型
-    - [ ] 选择模型 (YOLO v8 / OpenCV)
-    - [ ] 训练自定义数据集
-    - [ ] 摄像头接入配置
-    - [ ] 实时识别pipeline
-[ ] 库存熔断系统
-    - [ ] 阈值配置
-    - [ ] 自动下架逻辑
-    - [ ] 通知机制
-```
-
-#### 移动端App开发
-```
-[ ] 技术选型
-    - [ ] React Native vs Flutter 评估
-    - [ ] 架构设计
-[ ] 核心功能开发
-    - [ ] 用户登录/注册
-    - [ ] 在线点餐
-    - [ ] 订单追踪
-    - [ ] 会员中心
-```
-
-### 🟢 低优先级 (长期规划)
-
-#### 礼品卡系统
-```
-[ ] 礼品卡数据模型
-[ ] 购买和充值流程
-[ ] 余额查询
-[ ] 消费扣减
-[ ] 转赠功能
-```
-
-#### 供应链管理
-```
-[ ] 供应商管理
-[ ] 采购订单
-[ ] 入库管理
-[ ] 成本核算
-```
-
-#### 会计系统集成
-```
-[ ] QuickBooks API 对接
-[ ] 自动生成财务报表
-[ ] 税务计算
-```
-
----
-
-## 📚 API文档
-
-### 访问方式
-
-启动后端服务后，访问以下地址：
-
-- **Swagger UI**: `http://localhost:8000/docs`
-- **ReDoc**: `http://localhost:8000/redoc`
-- **OpenAPI JSON**: `http://localhost:8000/openapi.json`
-
-### API端点概览
-
-#### 认证 (Authentication)
-```
-POST   /api/v1/auth/register      - 注册用户
-POST   /api/v1/auth/login         - 用户登录
-POST   /api/v1/auth/refresh       - 刷新Token
-GET    /api/v1/auth/me            - 获取当前用户信息
-```
-
-#### 菜单管理 (Menu)
-```
-GET    /api/v1/menu/              - 获取菜单列表
-POST   /api/v1/menu/              - 创建菜品
-GET    /api/v1/menu/{id}          - 获取菜品详情
-PUT    /api/v1/menu/{id}          - 更新菜品
-DELETE /api/v1/menu/{id}          - 删除菜品
-GET    /api/v1/menu/categories/   - 获取分类列表
-```
-
-#### 订单管理 (Orders)
-```
-GET    /api/v1/orders/            - 获取订单列表
-POST   /api/v1/orders/            - 创建订单
-GET    /api/v1/orders/{id}        - 获取订单详情
-PUT    /api/v1/orders/{id}        - 更新订单
-PATCH  /api/v1/orders/{id}/status - 更新订单状态
-POST   /api/v1/orders/{id}/split  - 分单
-```
-
-#### 桌台管理 (Tables)
-```
-GET    /api/v1/tables/            - 获取桌位列表
-POST   /api/v1/tables/            - 创建桌位
-PUT    /api/v1/tables/{id}        - 更新桌位
-PATCH  /api/v1/tables/{id}/status - 更新桌位状态
-POST   /api/v1/tables/{id}/generate-qr - 生成QR码 ✅
-GET    /api/v1/tables/qr/{qr_code}     - 通过QR码获取桌位 ✅
-```
-
-#### 预订系统 (Reservations) ✅
-```
-GET    /api/v1/reservations/                      - 获取预订列表
-POST   /api/v1/reservations/                      - 创建预订
-GET    /api/v1/reservations/{id}                  - 获取预订详情
-PUT    /api/v1/reservations/{id}                  - 更新预订
-PATCH  /api/v1/reservations/{id}/status           - 更新预订状态
-POST   /api/v1/reservations/{id}/assign-table     - 分配桌位
-GET    /api/v1/reservations/availability/check    - 检查可用性
-GET    /api/v1/reservations/waitlist/             - 获取等位队列
-POST   /api/v1/reservations/waitlist/             - 加入等位
-PATCH  /api/v1/reservations/waitlist/{id}/call    - 叫号
-PATCH  /api/v1/reservations/waitlist/{id}/seat    - 入座
-```
-
-#### 忠诚度系统 (Loyalty) ✅
-```
-GET    /api/v1/loyalty/profile/{customer_id}      - 获取会员档案
-POST   /api/v1/loyalty/profile/create             - 创建会员档案
-POST   /api/v1/loyalty/points/earn                - 获得积分
-GET    /api/v1/loyalty/rewards/                   - 获取奖励列表
-POST   /api/v1/loyalty/rewards/redeem             - 兑换奖励
-GET    /api/v1/loyalty/transactions/{customer_id} - 积分交易记录
-GET    /api/v1/loyalty/leaderboard                - 会员排行榜
-```
-
-#### 支付管理 (Payments)
-```
-GET    /api/v1/payments/          - 获取支付记录
-POST   /api/v1/payments/          - 创建支付
-POST   /api/v1/payments/{id}/refund - 退款
-⚠️  POST   /api/v1/payments/stripe/webhook - Stripe Webhook (待实现)
-```
-
-#### 库存管理 (Inventory)
-```
-GET    /api/v1/inventory/         - 获取库存列表
-POST   /api/v1/inventory/         - 添加库存
-PUT    /api/v1/inventory/{id}     - 更新库存
-PATCH  /api/v1/inventory/{id}/adjust - 库存调整
-GET    /api/v1/inventory/alerts/  - 库存预警
-```
-
-#### 员工管理 (Staff)
-```
-GET    /api/v1/staff/             - 获取员工列表
-POST   /api/v1/staff/             - 添加员工
-GET    /api/v1/staff/{id}         - 获取员工详情
-PUT    /api/v1/staff/{id}         - 更新员工信息
-```
-
-#### 排班管理 (Schedule)
-```
-GET    /api/v1/schedule/          - 获取排班
-POST   /api/v1/schedule/          - 创建排班
-PUT    /api/v1/schedule/{id}      - 更新排班
-DELETE /api/v1/schedule/{id}      - 删除排班
-```
-
-#### 报表 (Reports)
-```
-GET    /api/v1/reports/sales      - 销售报表
-GET    /api/v1/reports/inventory  - 库存报表
-GET    /api/v1/reports/staff      - 员工报表
-GET    /api/v1/reports/dashboard  - 仪表板数据
-```
-
-#### 机器人控制 (Robot)
-```
-GET    /api/v1/robot/status       - 获取机器人状态
-POST   /api/v1/robot/task         - 创建烹饪任务
-POST   /api/v1/robot/gcode        - 发送G-Code指令
-GET    /api/v1/robot/queue        - 获取任务队列
-```
-
-#### AI Agent
-```
-POST   /api/v1/agent/chat         - AI聊天接口
-POST   /api/v1/agent/voice        - 语音输入
-POST   /api/v1/agent/recommend    - 获取推荐
-```
-
-#### 多店管理 (Multi-Location) ⚠️ 待实现
-```
-⚠️  GET    /api/v1/organizations/           - 获取组织列表
-⚠️  POST   /api/v1/organizations/           - 创建组织
-⚠️  GET    /api/v1/organizations/{id}       - 获取组织详情
-⚠️  GET    /api/v1/locations/               - 获取门店列表
-⚠️  POST   /api/v1/locations/               - 创建门店
-⚠️  GET    /api/v1/locations/{id}/stats     - 门店统计数据
-```
-
----
-
-## 🚢 部署指南
-
-### 开发环境部署
-
-已在[快速开始](#快速开始)章节说明
-
-### 生产环境部署 (Docker)
-
-#### 1. 配置环境变量
-
-```bash
-# 复制示例配置
-cp .env.example .env
-
-# 编辑配置文件
-vim .env
-```
-
-必填配置项:
-```env
-# 数据库
-DATABASE_URL=postgresql://user:password@postgres:5432/synapse_os
-
-# Redis
-REDIS_URL=redis://redis:6379/0
-
-# JWT密钥
-SECRET_KEY=your-secret-key-here
-
-# API基础URL
-API_BASE_URL=https://api.yourdomain.com
-
-# 前端URL
-FRONTEND_URL=https://yourdomain.com
-
-# (可选) 第三方服务
-STRIPE_SECRET_KEY=sk_live_xxx
-TWILIO_ACCOUNT_SID=ACxxx
-TWILIO_AUTH_TOKEN=xxx
-```
-
-#### 2. 构建和启动
-
-```bash
-# 构建镜像
-docker-compose build
-
-# 启动服务
-docker-compose up -d
-
-# 查看日志
-docker-compose logs -f backend
-docker-compose logs -f frontend
-
-# 停止服务
-docker-compose down
-```
-
-#### 3. 数据库迁移
-
-```bash
-# 进入后端容器
-docker-compose exec backend bash
-
-# 运行迁移
-alembic upgrade head
-
-# 退出容器
-exit
-```
-
-### 云平台部署 (推荐)
-
-#### Vercel (前端)
-
-```bash
-# 安装 Vercel CLI
-npm install -g vercel
-
-# 部署前端
-cd frontend
-vercel --prod
-```
-
-#### Railway / Render (后端)
-
-1. 连接 GitHub 仓库
-2. 配置环境变量
-3. 选择 `backend` 目录
-4. 自动部署
-
-#### AWS / Google Cloud / Azure
-
-详细部署文档请参考: [DEPLOYMENT.md](./DEPLOYMENT.md) (待创建)
-
----
-
-## 🤝 贡献指南
-
-我们欢迎所有形式的贡献！
-
-### 如何贡献
-
-1. **Fork 本仓库**
-2. **创建特性分支** (`git checkout -b feature/AmazingFeature`)
-3. **提交更改** (`git commit -m 'Add some AmazingFeature'`)
-4. **推送到分支** (`git push origin feature/AmazingFeature`)
-5. **打开 Pull Request**
-
-### 代码规范
-
-#### Python (Backend)
-```bash
-# 使用 black 格式化
-black app/
-
-# 使用 isort 排序导入
-isort app/
-
-# 使用 mypy 类型检查
-mypy app/
-
-# 运行测试
-pytest
-```
-
-#### TypeScript (Frontend)
-```bash
-# 代码检查
-npm run lint
-
-# 类型检查
-npm run type-check
-
-# 格式化
-npm run format
-```
-
-### 提交信息规范
-
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-Type:
-- `feat`: 新功能
-- `fix`: 修复Bug
-- `docs`: 文档更新
-- `style`: 代码格式化
-- `refactor`: 重构
-- `test`: 测试
-- `chore`: 构建/工具链
-
-示例:
-```
-feat(loyalty): 添加积分过期提醒功能
-
-- 实现积分过期检查定时任务
-- 发送邮件/短信提醒
-- 添加相关单元测试
-
-Closes #123
-```
-
----
-
-## 📄 许可证
-
-本项目采用 [MIT License](LICENSE) 开源协议。
-
----
-
-## 📞 联系我们
-
-- **项目主页**: https://synapse-os.com (待上线)
-- **GitHub**: https://github.com/your-org/synapse-os
-- **Email**: support@synapse-os.com
-- **Discord**: https://discord.gg/synapse-os (待创建)
-- **文档**: https://docs.synapse-os.com (待创建)
-
----
-
-## 🙏 致谢
-
-感谢以下开源项目:
-
-- [FastAPI](https://fastapi.tiangolo.com/) - 现代、快速的 Web 框架
-- [Next.js](https://nextjs.org/) - React 应用框架
-- [SQLAlchemy](https://www.sqlalchemy.org/) - Python ORM
-- [Tailwind CSS](https://tailwindcss.com/) - 实用优先的 CSS 框架
-- [智谱AI](https://open.bigmodel.cn/) - 强大的中文LLM
-
----
-
-## 🗺️ 路线图
-
-### v2.1 (2026 Q2)
-- [ ] 支付集成 (Stripe/Square)
-- [ ] SMS/Email 通知
-- [ ] 多店管理API完善
-- [ ] AI客服前端界面
-
-### v2.2 (2026 Q3)
-- [ ] 移动端App (React Native)
-- [ ] 视觉库存监控
-- [ ] 礼品卡系统
-- [ ] 第三方评价平台集成
-
-### v3.0 (2026 Q4)
-- [ ] 供应链管理
-- [ ] 会计系统集成
-- [ ] 多租户SaaS架构
-- [ ] 国际化 (i18n)
-
----
-
-**🚀 立即开始使用 Synapse OS，开启餐饮数字化转型之旅！**
-
----
-
-_最后更新: 2026-01-28_  
-_版本: v2.0.0_  
-_维护者: Synapse OS Team_
+Proprietary — All rights reserved. © 2026 PanShaker Services.

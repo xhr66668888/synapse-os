@@ -1,2 +1,45 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+*.db
+*.sqlite3
+
+# Environment
+.env
+.env.local
+
+# Node.js
 node_modules/
-frontend/node_modules/
+.next/
+.next.bak/
+out/
+
+# Build artifacts
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Uploads & generated
+uploads/
+*.tmp
+
+# Docker
+docker-compose.override.yml
+
+# Old README backup
+README_OLD.md

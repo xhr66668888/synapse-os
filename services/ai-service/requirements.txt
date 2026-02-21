@@ -1,0 +1,26 @@
+# Synapse OS — AI 服务 (Python)
+# 从现有 backend/app/services/ 迁移
+#
+# ⚠️ 功能状态
+# ✅ 可复用: 现有 Python backend 中的 AI 服务代码
+# 🔲 待迁移: 从 backend/app/services/ 提取到此独立服务
+# 🔲 待对接: MiniMax API (替换 ZhipuAI)
+
+fastapi==0.109.2
+uvicorn==0.27.1
+pydantic==2.6.1
+pydantic-settings==2.1.0
+openai>=1.0.0
+httpx==0.26.0
+python-multipart==0.0.6
+redis==5.0.1
+sqlalchemy==2.0.25
+asyncpg==0.29.0
+
+# 语音识别
+openai-whisper>=20231117
+
+# 代码质量
+ruff>=0.2.0
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
