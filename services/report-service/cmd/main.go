@@ -1,6 +1,6 @@
 // Synapse OS — 报表微服务
 // Report Service: 营收统计、销售趋势、菜品分析
-// ⚠️ 功能状态: 🔲 骨架已搭建
+// 功能状态: 骨架已搭建
 // 参考: backend/app/api/v1/reports.py
 // 注意: 读取 PostgreSQL 只读副本，不影响主库写入性能
 

@@ -17,7 +17,7 @@ terraform {
   }
 
   # 状态文件存储在 Azure Blob Storage
-  # 🔲 待配置: 需要先手动创建 storage account
+  # 待配置: 需要先手动创建 storage account
   # backend "azurerm" {
   #   resource_group_name  = "synapse-terraform-state"
   #   storage_account_name = "synapseterraform"

@@ -124,9 +124,9 @@ func main() {
 
 	// 后台启动
 	go func() {
-		log.Printf("🚀 Synapse OS Gateway 启动在 :%s", cfg.Port)
+		log.Printf("Synapse OS Gateway 启动在 :%s", cfg.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("❌ 服务启动失败: %v", err)
+			log.Fatalf("服务启动失败: %v", err)
 		}
 	}()
 
@@ -134,13 +134,13 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("⏳ 正在关闭网关服务...")
+	log.Println("正在关闭网关服务...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("❌ 强制关闭: %v", err)
+		log.Fatalf("强制关闭: %v", err)
 	}
-	log.Println("👋 网关服务已停止")
+	log.Println("网关服务已停止")
 }

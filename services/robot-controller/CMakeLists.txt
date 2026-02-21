@@ -2,9 +2,9 @@
 # Synapse OS — 炒菜机器人控制器
 # Robot Controller (C++ 17)
 #
-# 📌 此模块由中国硬件团队维护
-# 📌 负责: G-Code 指令生成、实时机器通信、温控、翻炒控制
-# 📌 通信: gRPC (与 Go 网关) + TCP/Serial (与物理机器人)
+# 此模块由中国硬件团队维护
+# 负责: G-Code 指令生成、实时机器通信、温控、翻炒控制
+# 通信: gRPC (与 Go 网关) + TCP/Serial (与物理机器人)
 # ==========================================
 
 cmake_minimum_required(VERSION 3.20)
@@ -23,8 +23,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # ==========================================
 
 # gRPC (与上游服务通信)
-# find_package(gRPC REQUIRED)    # 🔲 需要安装 gRPC C++ 库
-# find_package(Protobuf REQUIRED) # 🔲 需要安装 protobuf
+# find_package(gRPC REQUIRED)    # 需要安装 gRPC C++ 库
+# find_package(Protobuf REQUIRED) # 需要安装 protobuf
 
 # Boost (串口通信、异步 I/O)
 # find_package(Boost REQUIRED COMPONENTS system serialization)
@@ -78,4 +78,4 @@ install(TARGETS ${PROJECT_NAME}
 # ==========================================
 
 enable_testing()
-# add_subdirectory(tests)  # 🔲 待创建测试目录
+# add_subdirectory(tests)  # 待创建测试目录

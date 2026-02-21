@@ -1,6 +1,6 @@
 // Synapse OS — 库存微服务
 // Inventory Service: 库存追踪、出入库管理、低库存预警
-// ⚠️ 功能状态: 🔲 骨架已搭建
+// 功能状态: 骨架已搭建
 // 参考: backend/app/api/v1/inventory.py
 // 注意: 未来需与 C++ vision-engine 联动，接收视觉识别结果自动扣减库存
 
@@ -25,7 +25,7 @@ func main() {
 
 	lis, _ := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	go func() {
-		log.Printf("📦 库存服务 (inventory-service) 启动在 :%s", port)
+		log.Printf("库存服务 (inventory-service) 启动在 :%s", port)
 		grpcServer.Serve(lis)
 	}()
 

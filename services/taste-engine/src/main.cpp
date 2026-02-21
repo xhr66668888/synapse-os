@@ -3,10 +3,10 @@
  * Taste Engine: 基于用户 ID 的口味数字孪生
  *
  * ==========================================
- * 📌 此模块由中国 AI/算法团队维护
+ * 此模块由中国 AI/算法团队维护
  * ==========================================
  *
- * 🔲 全部待实现
+ * 全部待实现
  *
  * 核心概念:
  *   每个用户有一个"口味向量" (Taste Vector), 包含:
@@ -32,9 +32,9 @@
 #include <iostream>
 
 int main() {
-  std::cout << "🧂 口味 C2M 引擎 (taste-engine) 启动" << std::endl;
-  std::cout << "🔲 全部功能待实现" << std::endl;
-  std::cout << "📌 由中国算法团队负责实现" << std::endl;
+  std::cout << "口味 C2M 引擎 (taste-engine) 启动" << std::endl;
+  std::cout << "全部功能待实现" << std::endl;
+  std::cout << "由中国算法团队负责实现" << std::endl;
   std::cin.get();
   return 0;
 }

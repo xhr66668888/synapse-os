@@ -9,10 +9,10 @@
 //   - 订单事件发布 (通过 Azure Service Bus)
 //
 // ==========================================
-// ⚠️ 功能状态
-// ✅ 骨架已搭建: 项目结构、gRPC server、配置
-// 🔲 待实现: 数据库操作、业务逻辑 (从 Python FastAPI 迁移)
-// 🔲 待实现: 事件发布 (订单创建/完成 → event-bus)
+// 功能状态
+// 骨架已搭建: 项目结构、gRPC server、配置
+// 待实现: 数据库操作、业务逻辑 (从 Python FastAPI 迁移)
+// 待实现: 事件发布 (订单创建/完成 → event-bus)
 // ==========================================
 
 package main
@@ -56,14 +56,14 @@ func main() {
 	// 监听端口
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", cfg.GRPCPort))
 	if err != nil {
-		log.Fatalf("❌ 订单服务启动失败: %v", err)
+		log.Fatalf("订单服务启动失败: %v", err)
 	}
 
 	// 后台启动 gRPC 服务
 	go func() {
-		log.Printf("📦 订单服务 (order-service) 启动在 :%s", cfg.GRPCPort)
+		log.Printf("订单服务 (order-service) 启动在 :%s", cfg.GRPCPort)
 		if err := grpcServer.Serve(lis); err != nil {
-			log.Fatalf("❌ gRPC 服务失败: %v", err)
+			log.Fatalf("gRPC 服务失败: %v", err)
 		}
 	}()
 
@@ -71,7 +71,7 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("⏳ 正在关闭订单服务...")
+	log.Println("正在关闭订单服务...")
 	grpcServer.GracefulStop()
-	log.Println("👋 订单服务已停止")
+	log.Println("订单服务已停止")
 }

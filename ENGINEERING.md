@@ -1,36 +1,36 @@
-# Synapse OS — Engineering Maintenance Guide
+# Synapse OS — 工程师维护手册
 
-> 工程师技术维护手册 | v0.9 → v2.0 商用化路线图
+> v0.9 → v2.0 商用化路线图
 
-**Last Updated:** 2026-02-21  
-**Audience:** Backend/Frontend/DevOps engineers on the Synapse OS team
-
----
-
-## Table of Contents
-
-1. [Current Architecture Overview](#1-current-architecture-overview)
-2. [Code Audit & Technical Debt](#2-code-audit--technical-debt)
-3. [Feature Implementation Status](#3-feature-implementation-status)
-4. [Unimplemented Interfaces (留空接口)](#4-unimplemented-interfaces)
-5. [Commercial Tech Stack Roadmap](#5-commercial-tech-stack-roadmap)
-6. [Service Architecture (Target)](#6-service-architecture-target)
-7. [Database Migration Plan](#7-database-migration-plan)
-8. [Infrastructure (Azure)](#8-infrastructure-azure)
-9. [Development Workflow](#9-development-workflow)
-10. [Security Checklist](#10-security-checklist)
+**最后更新:** 2026-02-21
+**读者:** Synapse OS 后端、前端、运维工程师
 
 ---
 
-## 1. Current Architecture Overview
+## 目录
 
-### System Diagram (As-Is)
+1. [当前架构概述](#1-当前架构概述)
+2. [代码审计与技术债务](#2-代码审计与技术债务)
+3. [功能实现状态](#3-功能实现状态)
+4. [留空接口清单](#4-留空接口清单)
+5. [商用化技术栈路线图](#5-商用化技术栈路线图)
+6. [目标服务架构](#6-目标服务架构)
+7. [数据库迁移计划](#7-数据库迁移计划)
+8. [基础设施 (Azure)](#8-基础设施-azure)
+9. [开发工作流](#9-开发工作流)
+10. [安全清单](#10-安全清单)
+
+---
+
+## 1. 当前架构概述
+
+### 系统架构图 (现状)
 
 ```
 ┌──────────────┐     ┌──────────────┐
 │  Next.js 15  │────▶│  FastAPI      │
 │  React 19    │ HTTP│  Python 3.11  │
-│  Port 3000   │ WS  │  Port 8000    │
+│  端口 3000   │ WS  │  端口 8000    │
 └──────────────┘     └──────┬───────┘
                            │
                     ┌──────┴───────┐
@@ -41,218 +41,217 @@
                └─────────┘  └──────────┘
 ```
 
-### Backend Stack
+### 后端技术栈
 
-| Component | Technology | Version | Status |
-|-----------|-----------|---------|--------|
-| Web Framework | FastAPI | 0.109.2 | ✅ Production-ready |
-| ORM | SQLAlchemy (async) | 2.0.25 | ✅ |
-| DB Driver | asyncpg | 0.29.0 | ✅ |
-| Migrations | Alembic | 1.13.1 | ⚠️ No migration files found |
-| Cache | Redis | 5.0.1 (client) | ✅ Connected but underutilized |
-| Auth | python-jose + passlib | 3.3.0 / 1.7.4 | ✅ JWT-based |
-| AI | OpenAI SDK (ZhipuAI) | ≥1.0.0 | ✅ Multi-agent pipeline |
-| STT | openai-whisper | ≥20231117 | ⚠️ Optional, needs ffmpeg |
+| 组件 | 技术 | 版本 | 状态 |
+|------|------|------|------|
+| Web 框架 | FastAPI | 0.109.2 | 生产可用 |
+| ORM | SQLAlchemy (异步) | 2.0.25 | 正常 |
+| 数据库驱动 | asyncpg | 0.29.0 | 正常 |
+| 数据迁移 | Alembic | 1.13.1 | 无迁移文件 |
+| 缓存 | Redis | 5.0.1 (客户端) | 已连接但未充分利用 |
+| 认证 | python-jose + passlib | 3.3.0 / 1.7.4 | JWT 方案 |
+| AI | OpenAI SDK (ZhipuAI) | >=1.0.0 | 多智能体管道 |
+| 语音识别 | openai-whisper | >=20231117 | 可选，需要 ffmpeg |
 
-### Frontend Stack
+### 前端技术栈
 
-| Component | Technology | Version |
-|-----------|-----------|---------|
-| Framework | Next.js (App Router) | 15.1.0 |
-| UI Library | React | 19.0.0 |
-| Language | TypeScript | 5.6.0 |
+| 组件 | 技术 | 版本 |
+|------|------|------|
+| 框架 | Next.js (App Router) | 15.1.0 |
+| UI 库 | React | 19.0.0 |
+| 语言 | TypeScript | 5.6.0 |
 | CSS | Tailwind CSS | 3.4.0 |
-| State | Zustand + React Query | 5.0.0 / 5.60.0 |
-| Charts | Chart.js + react-chartjs-2 | 4.5.1 / 5.3.1 |
-| DB Client | Supabase JS | 2.93.2 |
+| 状态管理 | Zustand + React Query | 5.0.0 / 5.60.0 |
+| 图表 | Chart.js + react-chartjs-2 | 4.5.1 / 5.3.1 |
+| 数据库客户端 | Supabase JS | 2.93.2 |
 
-### Key Files
+### 关键文件
 
-| File | Purpose |
-|------|---------|
-| `backend/app/main.py` | FastAPI app entry, CORS, lifespan |
-| `backend/app/config.py` | Pydantic settings (env vars) |
-| `backend/app/database.py` | SQLAlchemy engine + session factory |
-| `backend/app/api/v1/router.py` | Route registration (14 routers) |
-| `frontend/app/layout.tsx` | Root layout |
-| `frontend/lib/api.ts` | API client (27KB — monolithic fetch wrapper) |
-| `frontend/lib/auth.tsx` | Auth context & JWT handling |
-| `docker-compose.yml` | Local dev: PostgreSQL + Redis + Backend + Frontend |
+| 文件 | 用途 |
+|------|------|
+| `backend/app/main.py` | FastAPI 应用入口、CORS、生命周期 |
+| `backend/app/config.py` | Pydantic Settings 配置 |
+| `backend/app/database.py` | SQLAlchemy 引擎 + 会话工厂 |
+| `backend/app/api/v1/router.py` | 路由注册 (14 个路由器) |
+| `frontend/app/layout.tsx` | 根布局 |
+| `frontend/lib/api.ts` | API 客户端 (27KB — 巨型单文件) |
+| `frontend/lib/auth.tsx` | 认证上下文 + JWT 处理 |
+| `docker-compose.yml` | 本地开发: PostgreSQL + Redis + 后端 + 前端 |
 
 ---
 
-## 2. Code Audit & Technical Debt
+## 2. 代码审计与技术债务
 
-### ✅ Critical Issues (RESOLVED 2026-02-21)
+### 已解决的严重问题 (2026-02-21)
 
-#### 2.1 ~~Third-party repos dumped into the project~~ → DELETED
-`MobileAgent-main/` (984 files), `Open-AutoGLM-main/` (56 files), `UI-TARS-main/` (22 files) have been removed. ~140MB of research repos purged.
+#### 2.1 ~~第三方仓库混入项目~~ → 已删除
+`MobileAgent-main/` (984 文件)、`Open-AutoGLM-main/` (56 文件)、`UI-TARS-main/` (22 文件) 已全部删除。清理约 140MB 研究仓库。
 
-#### 2.2 ~~Legacy application still in tree~~ → DELETED
-`legacy-synapse-os/` (old Vite/React SPA) has been removed.
+#### 2.2 ~~旧版前端仍在目录树中~~ → 已删除
+`legacy-synapse-os/`（旧版 Vite/React SPA）已删除。
 
-#### 2.3 ~~Root-level file sprawl~~ → ORGANIZED
-Assets moved to proper directories:
+#### 2.3 ~~根目录文件散乱~~ → 已整理
+资产已移至规范目录:
 - `assets/fonts/myfont.ttf`
-- `assets/images/logo.png`, `synapseoslogo.png`, `profile.jpeg`
+- `assets/images/logo.png`、`synapseoslogo.png`、`profile.jpeg`
 - `docs/marketing/description-page-AD.html`
-- Obsolete docs (`DEVELOPMENT.md`, `FEATURE_UPDATE.md`) deleted
-- Empty `icon_url/` deleted
+- 过时文档（`DEVELOPMENT.md`、`FEATURE_UPDATE.md`）已删除
+- 空目录 `icon_url/` 已删除
 
-#### 2.4 ~~Minimal .gitignore~~ → FIXED
-Comprehensive `.gitignore` now covers Python, Node, env files, build artifacts, OS files, IDE configs.
+#### 2.4 ~~.gitignore 过于简陋~~ → 已修复
+`.gitignore` 已扩展为完整版，涵盖 Python、Node、环境文件、构建产物、操作系统文件、IDE 配置。
 
-### 🟡 Medium Issues
+### 中等问题
 
-#### 2.5 Test coverage near zero
-Only 1 test file exists: `backend/tests/test_task_decomposer.py`. No tests for:
-- API endpoints
-- Auth flows
-- Database operations
-- Frontend (no Jest/Vitest/Playwright)
+#### 2.5 测试覆盖率接近零
+仅有 1 个测试文件: `backend/tests/test_task_decomposer.py`。以下部分无测试:
+- API 端点
+- 认证流程
+- 数据库操作
+- 前端（无 Jest/Vitest/Playwright）
 
-#### 2.6 No database migrations
-Alembic is in `requirements.txt` but no `alembic/` directory or migration files exist. The app uses `Base.metadata.create_all()` at startup — acceptable for prototyping, fatal for production schema evolution.
+#### 2.6 无数据库迁移
+Alembic 在 `requirements.txt` 中但无 `alembic/` 目录或迁移文件。应用使用 `Base.metadata.create_all()` 启动 — 原型阶段可接受，生产环境的 schema 演进不可行。
 
-#### 2.7 Dual database strategy confusion
-Both Supabase (frontend direct access via `@supabase/supabase-js`) and FastAPI/SQLAlchemy (backend) can access the database. This creates:
-- Race conditions on writes
-- Inconsistent auth models
-- Schema drift between `supabase/schema.sql` and SQLAlchemy models
+#### 2.7 双数据库访问策略冲突
+前端通过 `@supabase/supabase-js` 直接访问数据库，后端通过 FastAPI/SQLAlchemy 也访问同一数据库。会导致:
+- 写入竞态条件
+- 认证模型不一致
+- `supabase/schema.sql` 与 SQLAlchemy 模型之间的 schema 漂移
 
-**Decision needed:** Single source of truth for data access — backend API only (recommended for production).
+**决策:** 单一数据访问源 — 仅通过后端 API（生产环境推荐方案）。
 
-#### 2.8 Monolithic API client (`frontend/lib/api.ts` — 27KB)
-Contains all API calls in a single file. Should be split by domain (orders, menu, payments, etc.).
+#### 2.8 巨型 API 客户端文件 (`frontend/lib/api.ts` — 27KB)
+所有 API 调用集中在一个文件中。应按业务域拆分（订单、菜单、支付等）。
 
-#### 2.9 No CI/CD pipeline
-No GitHub Actions, no linting enforcement, no automated testing.
+#### 2.9 无 CI/CD 管道
+无 GitHub Actions、无代码检查强制执行、无自动化测试。
 
-### 🟢 Low Priority
+### 低优先级
 
-- No logging infrastructure (only `print()` statements)
-- No rate limiting implementation
-- No API versioning beyond URL prefix `/api/v1`
-- `docker-compose.yml` exposes dev passwords
-
----
-
-## 3. Feature Implementation Status
-
-### Fully Functional Features
-
-These modules have complete backend API + frontend UI and can handle real traffic:
-
-1. **POS System** — Order creation, cart, split checks, course management, tip calc
-2. **Menu Management** — CRUD for categories, items, modifiers with pricing
-3. **Order Management** — Full lifecycle: pending → preparing → ready → completed
-4. **Table Management** — Visual layout, status tracking, QR code generation
-5. **KDS** — Real-time order display via WebSocket, status updates, timers
-6. **Reservations** — Booking creation, waitlist queue, seat assignment
-7. **QR Code Ordering** — Mobile-optimized guest self-ordering flow
-8. **Self-Order Kiosk** — Touch-optimized, bilingual, auto-idle reset
-9. **Pickup Display** — Large-screen order status with animations
-10. **Staff Management** — CRUD, role assignment
-11. **Inventory** — Stock items, transactions, reorder points
-12. **Reports** — Revenue, item sales, trends
-13. **Robot Control** — G-Code generation, status monitoring, task queue
-14. **AI Multi-Agent** — Task decomposition, multi-agent coordination, Whisper STT
-
-### Data Model Exists, No Live Integration
-
-These modules have SQLAlchemy models and sometimes API stubs, but **no real external service integration**:
-
-1. **Payment Processing** — `payment.py` model exists, Stripe/Square API not connected
-2. **Loyalty Program** — Full model + API, but frontend UI is incomplete
-3. **Multi-Location** — Organization/Location models, no API endpoints implemented
-4. **Review Management** — Review model + AI reply generation, no Google/Yelp API
-5. **SMS Marketing** — Campaign/Log models, no Twilio/SMS provider connected
-6. **Scheduling** — Shift models exist, optimization algorithm not implemented
-7. **AI Recommendations** — Basic recommendation service, no ML model
+- 无日志基础设施（仅 `print()` 语句）
+- 无请求限流实现
+- 无 API 版本管理（仅 URL 前缀 `/api/v1`）
+- `docker-compose.yml` 暴露了开发密码
 
 ---
 
-## 4. Unimplemented Interfaces (留空接口)
+## 3. 功能实现状态
 
-> **The following API endpoints are declared or documented but NOT connected to any real service. They will return errors or empty responses.**
+### 完整功能
 
-### Payment Gateway
+以下模块具有完整的后端 API + 前端 UI，可处理真实流量:
 
-| Endpoint | File | Status |
-|----------|------|--------|
-| `POST /payments/stripe/create-payment-intent` | `api/v1/payments.py` | ❌ Stub — no Stripe SDK |
-| `POST /payments/stripe/webhook` | `api/v1/payments.py` | ❌ Stub |
-| `POST /payments/refund` | `api/v1/payments.py` | ❌ Stub |
+1. **收银系统** — 建单、购物车、分单、课程管理、小费计算
+2. **菜单管理** — 分类、菜品、修饰符的增删改查
+3. **订单管理** — 完整生命周期: 待处理 → 准备中 → 完成 → 结单
+4. **桌台管理** — 可视化布局、状态追踪、二维码生成
+5. **厨显 (KDS)** — WebSocket 实时订单显示、状态更新、计时器
+6. **预订管理** — 预订创建、等位队列、座位分配
+7. **二维码点餐** — 移动端优化的顾客自助点餐流程
+8. **自助点餐机** — 触屏优化、双语、空闲自动重置
+9. **取餐屏** — 大屏订单状态显示，含动画效果
+10. **员工管理** — 增删改查、角色分配
+11. **库存** — 库存项、出入库记录、补货点
+12. **报表** — 营收、菜品销售、趋势
+13. **机器人控制** — G-Code 生成、状态监控、任务队列
+14. **AI 多智能体** — 任务分解、多智能体协调、Whisper 语音识别
 
-### SMS/Email Notifications
+### 仅有数据模型，无外部服务集成
 
-| Endpoint | File | Status |
-|----------|------|--------|
-| SMS send | `models/review.py` (SMSCampaign/SMSLog models only) | ❌ No Twilio SDK |
-| Email notifications | Not implemented anywhere | ❌ No SendGrid/SES |
+以下模块有 SQLAlchemy 模型和部分 API 桩，但**无真实外部服务对接**:
 
-### Multi-Location Management
-
-| Endpoint | File | Status |
-|----------|------|--------|
-| Organization CRUD | `models/organization.py` (model only) | ❌ No API routes |
-| Location CRUD | Same | ❌ No API routes |
-| Cross-location transfer | Same | ❌ No API routes |
-
-### Computer Vision / Inventory Monitoring
-
-| Component | Status |
-|-----------|--------|
-| Camera driver integration | ❌ Not started |
-| Object detection model (YOLO/OpenCV) | ❌ Not started |
-| Real-time inventory deduction | ❌ Not started |
-| Circuit breaker (over-sell prevention) | ❌ Not started |
-
-### AI Features (Planned Provider: MiniMax API)
-
-| Component | Current Status | Planned |
-|-----------|---------------|---------|
-| LLM Provider | ZhipuAI GLM-4 | → MiniMax API (留空, 待对接) |
-| AI Chat UI | No frontend | → Frontend chat component needed |
-| Conversation history | Not persisted | → Database storage needed |
-| Voice input | Whisper works but no UI | → Frontend mic component needed |
-| Smart recommendations | Basic logic only | → ML pipeline with MiniMax |
+1. **支付处理** — `payment.py` 模型存在，Stripe/Square API 未连接
+2. **忠诚度计划** — 完整模型 + API，前端 UI 不完整
+3. **多店管理** — Organization/Location 模型，无 API 端点
+4. **评论管理** — Review 模型 + AI 回复生成，无 Google/Yelp API
+5. **短信营销** — Campaign/Log 模型，无 Twilio/短信服务商
+6. **排班优化** — Shift 模型存在，优化算法未实现
+7. **AI 推荐** — 基础推荐服务，无 ML 模型
 
 ---
 
-## 5. Commercial Tech Stack Roadmap
+## 4. 留空接口清单
 
-### Target Architecture (v2.0)
+> **以下 API 端点已声明或文档化，但未连接任何真实服务。调用将返回错误或空响应。**
 
-Based on competitive analysis of Toast, Chowbus, and MenuSifu, here is the recommended commercial-grade tech stack:
+### 支付网关
+
+| 端点 | 文件 | 状态 |
+|------|------|------|
+| `POST /payments/stripe/create-payment-intent` | `api/v1/payments.py` | 桩 — 无 Stripe SDK |
+| `POST /payments/stripe/webhook` | `api/v1/payments.py` | 桩 |
+| `POST /payments/refund` | `api/v1/payments.py` | 桩 |
+
+### 短信/邮件通知
+
+| 端点 | 文件 | 状态 |
+|------|------|------|
+| 短信发送 | `models/review.py` (仅 SMSCampaign/SMSLog 模型) | 无 Twilio SDK |
+| 邮件通知 | 未在任何地方实现 | 无 SendGrid/SES |
+
+### 多店管理
+
+| 端点 | 文件 | 状态 |
+|------|------|------|
+| 组织增删改查 | `models/organization.py` (仅模型) | 无 API 路由 |
+| 门店增删改查 | 同上 | 无 API 路由 |
+| 跨店调拨 | 同上 | 无 API 路由 |
+
+### 计算机视觉 / 库存监控
+
+| 组件 | 状态 |
+|------|------|
+| 摄像头驱动集成 | 未开始 |
+| 目标检测模型 (YOLO/OpenCV) | 未开始 |
+| 实时库存扣减 | 未开始 |
+| 超卖熔断 | 未开始 |
+
+### AI 功能 (计划对接: MiniMax API)
+
+| 组件 | 当前状态 | 计划 |
+|------|----------|------|
+| LLM 服务商 | ZhipuAI GLM-4 | → MiniMax API (留空，待对接) |
+| AI 聊天 UI | 无前端 | → 需要前端聊天组件 |
+| 对话历史 | 未持久化 | → 需要数据库存储 |
+| 语音输入 | Whisper 可用但无 UI | → 需要前端麦克风组件 |
+| 智能推荐 | 仅基础逻辑 | → 需要 MiniMax ML 管道 |
+
+---
+
+## 5. 商用化技术栈路线图
+
+### 目标架构 (v2.0)
+
+基于 Toast、Chowbus、MenuSifu 的竞品分析，推荐以下商用级技术栈:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                        CLIENT LAYER                                     │
+│                          客户端层                                       │
 ├───────────────┬───────────────┬───────────┬──────────────┬──────────────┤
-│  Android POS  │  Web Admin    │ Mobile App│  Kiosk/KDS   │ Pickup Screen│
+│  Android POS  │  Web 管理后台 │ 移动端App │  点餐机/厨显 │  取餐屏      │
 │  (Kotlin)     │  (Next.js)    │ (Flutter) │  (React)     │  (React)     │
 └───────┬───────┴───────┬───────┴─────┬─────┴──────┬───────┴──────┬───────┘
         │               │             │            │              │
         └───────────────┴─────────────┴────────────┴──────────────┘
                                     │
                           ┌─────────▼──────────┐
-                          │   Azure API Mgmt   │
-                          │   (API Gateway)    │
+                          │  Azure API 管理    │
+                          │  (API 网关)        │
                           └─────────┬──────────┘
                                     │
         ┌───────────────────────────┼───────────────────────────┐
         │                           │                           │
 ┌───────▼───────┐  ┌────────────────▼────────────┐  ┌──────────▼──────────┐
-│  Go Services  │  │   Rust Services              │  │  C++ Services       │
+│  Go 服务      │  │   Rust 服务                  │  │  C++ 服务           │
 │               │  │                              │  │                     │
-│ • Order API   │  │ • Payment Engine             │  │ • Robot Controller  │
-│ • Menu API    │  │ • Real-time Event Bus        │  │   (G-Code pipeline) │
-│ • Auth/IAM    │  │ • Analytics Pipeline         │  │ • CV/Vision Engine  │
-│ • Table Mgmt  │  │ • WebSocket Gateway          │  │   (OpenCV + YOLO)   │
-│ • Staff API   │  │                              │  │ • Taste Engine      │
-│ • Report API  │  │                              │  │   (C2M computation) │
-│               │  │                              │  │                     │
+│ - 订单 API    │  │ - 支付引擎                   │  │ - 机器人控制器      │
+│ - 菜单 API    │  │ - 实时事件总线               │  │   (G-Code 管道)     │
+│ - 认证/权限   │  │ - 数据分析管道               │  │ - 视觉库存引擎      │
+│ - 桌台管理    │  │ - WebSocket 网关             │  │   (OpenCV + YOLO)   │
+│ - 员工 API    │  │                              │  │ - 口味 C2M 引擎     │
+│ - 报表 API    │  │                              │  │                     │
 └───────┬───────┘  └──────────────┬───────────────┘  └──────────┬──────────┘
         │                         │                             │
         └─────────────────────────┼─────────────────────────────┘
@@ -261,135 +260,135 @@ Based on competitive analysis of Toast, Chowbus, and MenuSifu, here is the recom
         │                         │                             │
 ┌───────▼───────┐  ┌──────────────▼───────────┐  ┌─────────────▼──────────┐
 │  PostgreSQL   │  │   Redis                  │  │   Azure Blob Storage   │
-│  (Azure DB)   │  │   (Azure Cache)          │  │   (Images, G-Code)     │
+│  (Azure DB)   │  │   (Azure Cache)          │  │   (图片、G-Code)       │
 │               │  │   + Azure Service Bus    │  │                        │
 └───────────────┘  └──────────────────────────┘  └────────────────────────┘
                                   │
                     ┌─────────────▼──────────────┐
-                    │   AI Service (Python)       │
-                    │   • MiniMax API Client      │
-                    │   • Whisper STT             │
-                    │   • Multi-Agent Coordinator │
-                    │   • Recommendation Engine   │
+                    │   AI 服务 (Python)          │
+                    │   - MiniMax API 客户端      │
+                    │   - Whisper 语音识别        │
+                    │   - 多智能体协调器          │
+                    │   - 推荐引擎               │
                     └─────────────────────────────┘
 ```
 
-### Language / Service Mapping
+### 语言/服务映射
 
-| Service Domain | Language | Rationale |
-|---------------|----------|-----------|
-| **Core Business APIs** (Order, Menu, Table, Staff, Auth, Report, Reservation, Loyalty, Inventory) | **Go** | High concurrency, fast startup, excellent for microservices. Industry-proven (Uber, Cloudflare). Simple deployment as static binaries. |
-| **Payment Engine** | **Rust** | Memory safety for financial transactions, zero-cost abstractions, prevents common security vulnerabilities. PCI-DSS compliance demands this level of rigor. |
-| **Real-time Event Bus** (WebSocket gateway, order status, KDS events) | **Rust** | Tokio async runtime handles massive concurrent WebSocket connections efficiently. Sub-ms latency for kitchen display real-time updates. |
-| **Analytics Pipeline** | **Rust** | High-throughput data processing for sales analytics, trend computation. |
-| **Robot Controller** (G-Code generation, machine communication) | **C++** | Direct hardware communication, real-time control loops, integrates with existing robot firmware (typically C/C++). Subms timing requirements for oil temperature, stir-fry control. |
-| **Computer Vision Engine** (inventory monitoring, food recognition) | **C++** | OpenCV and YOLO inference run natively in C++. CUDA/TensorRT GPU acceleration for real-time object detection. |
-| **Taste C2M Engine** (per-user flavor computation) | **C++** | Numerical computation-intensive taste profile matching, spice level computation, and recipe parameter optimization. |
-| **AI/ML Services** (LLM integration, recommendations, STT) | **Python** | Richest ML ecosystem (PyTorch, HuggingFace, OpenAI SDK). MiniMax API client. Acceptable latency for non-real-time AI tasks. |
-| **Admin Dashboard** | **Next.js (TypeScript)** | Keep current stack — SSR, React ecosystem, existing UI. |
-| **Android POS Terminal** | **Kotlin** | Industry standard (Toast uses Kotlin). Deep Android integration for peripheral hardware (receipt printer, cash drawer, card reader). |
-| **Customer Mobile App** | **Flutter (Dart)** | Single codebase for iOS + Android. Rich UI toolkit. Cost-effective for a startup. |
+| 服务域 | 语言 | 理由 |
+|--------|------|------|
+| **核心业务 API** (订单、菜单、桌台、员工、认证、报表、预订、忠诚度、库存) | **Go** | 高并发、快速启动、微服务首选。Uber/Cloudflare 验证。静态二进制部署。 |
+| **支付引擎** | **Rust** | 内存安全保障金融交易，零成本抽象，编译器防止安全漏洞。PCI-DSS 合规要求。 |
+| **实时事件总线** (WebSocket 网关、订单状态、厨显事件) | **Rust** | Tokio 异步运行时高效处理海量并发 WebSocket 连接。厨显实时更新亚毫秒延迟。 |
+| **数据分析管道** | **Rust** | 高吞吐数据处理，销售分析、趋势计算。 |
+| **机器人控制器** (G-Code 生成、机器通信) | **C++** | 硬件直通、实时控制环路，与机器人固件（C/C++）集成。油温/翻炒控制亚毫秒时序。 |
+| **计算机视觉引擎** (库存监控、食物识别) | **C++** | OpenCV 和 YOLO 推理原生 C++。CUDA/TensorRT GPU 加速实时目标检测。 |
+| **口味 C2M 引擎** (用户口味计算) | **C++** | 高计算密度的口味画像匹配、辣度计算和食谱参数优化。 |
+| **AI/ML 服务** (LLM 集成、推荐、语音) | **Python** | 最丰富的 ML 生态（PyTorch、HuggingFace、OpenAI SDK）。MiniMax API 客户端。 |
+| **管理后台** | **Next.js (TypeScript)** | 保持现有技术栈 — SSR、React 生态、已有 UI。 |
+| **Android POS 终端** | **Kotlin** | 行业标准（Toast 使用 Kotlin）。深度 Android 集成外设（小票机、钱箱、刷卡器）。 |
+| **客户移动端** | **Flutter (Dart)** | iOS + Android 单代码库。丰富 UI 工具集。初创企业性价比高。 |
 
-### Why Not Pure Python/Node.js?
+### 为什么不用纯 Python/Node.js?
 
-| Concern | Python/Node.js | Our Stack |
-|---------|---------------|-----------|
-| Concurrent connections | GIL limits true parallelism / callback hell | Go goroutines (1M+ concurrent), Rust tokio |
-| Payment security | Dynamic typing = more runtime errors | Rust's compiler catches memory/type errors at build time |
-| Robot latency | ~10-50ms Python overhead | C++ <1ms deterministic control loops |
-| CV inference | Python wrapper adds overhead | C++ native CUDA/TensorRT, 10x throughput |
-| Cold start (containers) | 2-5s Python/Node | Go: <100ms, Rust: <50ms |
-| Memory footprint | 50-200MB per process | Go: 10-30MB, Rust: 5-15MB, C++: 3-10MB |
+| 关注点 | Python/Node.js | 我们的技术栈 |
+|--------|---------------|-------------|
+| 并发连接 | GIL 限制真并行 / 回调地狱 | Go goroutine (百万级并发)、Rust tokio |
+| 支付安全 | 动态类型 = 更多运行时错误 | Rust 编译器在构建时捕获内存/类型错误 |
+| 机器人延迟 | ~10-50ms Python 开销 | C++ <1ms 确定性控制环路 |
+| CV 推理 | Python 包装器有额外开销 | C++ 原生 CUDA/TensorRT，吞吐量 10 倍 |
+| 冷启动 (容器) | 2-5 秒 Python/Node | Go: <100ms, Rust: <50ms |
+| 内存占用 | 50-200MB/进程 | Go: 10-30MB, Rust: 5-15MB, C++: 3-10MB |
 
 ---
 
-## 6. Service Architecture (Target)
+## 6. 目标服务架构
 
-### Microservice Boundaries
+### 微服务边界
 
 ```
 synapse-os/
 ├── services/
-│   ├── gateway/              # Go — API Gateway + Auth middleware
-│   ├── order-service/        # Go — Order lifecycle
-│   ├── menu-service/         # Go — Menu CRUD
-│   ├── table-service/        # Go — Table management
-│   ├── staff-service/        # Go — Staff & scheduling
-│   ├── inventory-service/    # Go — Stock tracking
-│   ├── report-service/       # Go — Analytics aggregation
-│   ├── reservation-service/  # Go — Booking & waitlist
-│   ├── loyalty-service/      # Go — Points, tiers, rewards
-│   ├── payment-engine/       # Rust — Payment processing (Stripe/Square)
-│   ├── event-bus/            # Rust — WebSocket + message broker
-│   ├── analytics-pipeline/   # Rust — Data processing
-│   ├── robot-controller/     # C++ — G-Code & machine control
-│   ├── vision-engine/        # C++ — OpenCV/YOLO inventory monitoring
-│   ├── taste-engine/         # C++ — C2M flavor computation
-│   └── ai-service/           # Python — LLM, STT, recommendations
+│   ├── gateway/              # Go — API 网关 + 认证中间件
+│   ├── order-service/        # Go — 订单生命周期
+│   ├── menu-service/         # Go — 菜单增删改查
+│   ├── table-service/        # Go — 桌台管理
+│   ├── staff-service/        # Go — 员工与排班
+│   ├── inventory-service/    # Go — 库存追踪
+│   ├── report-service/       # Go — 分析聚合
+│   ├── reservation-service/  # Go — 预订与等位
+│   ├── loyalty-service/      # Go — 积分、等级、奖励
+│   ├── payment-engine/       # Rust — 支付处理 (Stripe/Square)
+│   ├── event-bus/            # Rust — WebSocket + 消息代理
+│   ├── analytics-pipeline/   # Rust — 数据处理
+│   ├── robot-controller/     # C++ — G-Code 与机器控制
+│   ├── vision-engine/        # C++ — OpenCV/YOLO 库存监控
+│   ├── taste-engine/         # C++ — C2M 口味计算
+│   └── ai-service/           # Python — LLM、语音识别、推荐
 │
 ├── clients/
-│   ├── web-admin/            # Next.js — Admin dashboard
-│   ├── android-pos/          # Kotlin — POS terminal
-│   ├── mobile-app/           # Flutter — Customer app
-│   ├── kiosk/                # React — Self-order kiosk
-│   └── pickup-display/       # React — Kitchen pickup screen
+│   ├── web-admin/            # Next.js — 管理后台
+│   ├── android-pos/          # Kotlin — POS 终端
+│   ├── mobile-app/           # Flutter — 客户 App
+│   ├── kiosk/                # React — 自助点餐机
+│   └── pickup-display/       # React — 取餐屏
 │
 ├── infra/
-│   ├── terraform/            # Azure IaC
-│   ├── k8s/                  # Kubernetes manifests
-│   ├── docker/               # Dockerfiles per service
-│   └── ci/                   # GitHub Actions workflows
+│   ├── terraform/            # Azure 基础设施即代码
+│   ├── k8s/                  # Kubernetes 清单
+│   ├── docker/               # 各服务 Dockerfile
+│   └── ci/                   # GitHub Actions 工作流
 │
-├── proto/                    # gRPC protobuf definitions (inter-service comm)
-├── shared/                   # Shared types, constants
-└── docs/                     # Architecture docs, ADRs
+├── proto/                    # gRPC Protobuf 定义 (服务间通信)
+├── shared/                   # 共享类型、常量
+└── docs/                     # 架构文档、ADR
 ```
 
-### Inter-Service Communication
+### 服务间通信
 
-| Communication | Technology | Use Case |
-|--------------|-----------|----------|
-| Client → Gateway | HTTPS + REST (JSON) | All client requests |
-| Gateway → Go services | gRPC (Protobuf) | Internal service calls, type-safe, fast |
-| Services → Event Bus | Azure Service Bus / Redis Streams | Async events (order created, payment completed) |
-| Event Bus → Clients | WebSocket (Rust gateway) | Real-time updates to KDS, pickup screen |
-| AI Service → Go services | REST (JSON) | AI responses back to business logic |
-| Robot Controller ↔ Hardware | TCP/Serial + G-Code | Direct machine communication |
-| Vision Engine → Inventory | gRPC | Stock deduction events |
+| 通信方式 | 技术 | 使用场景 |
+|---------|------|---------|
+| 客户端 → 网关 | HTTPS + REST (JSON) | 所有客户端请求 |
+| 网关 → Go 服务 | gRPC (Protobuf) | 服务间调用，类型安全，高性能 |
+| 服务 → 事件总线 | Azure Service Bus / Redis Streams | 异步事件（订单创建、支付完成） |
+| 事件总线 → 客户端 | WebSocket (Rust 网关) | 厨显、取餐屏实时更新 |
+| AI 服务 → Go 服务 | REST (JSON) | AI 响应返回业务逻辑 |
+| 机器人控制器 ↔ 硬件 | TCP/串口 + G-Code | 与物理机器人通信 |
+| 视觉引擎 → 库存 | gRPC | 库存扣减事件 |
 
 ---
 
-## 7. Database Migration Plan
+## 7. 数据库迁移计划
 
-### Phase 1: Clean up current PostgreSQL schema
+### 阶段一: 清理当前 PostgreSQL 模式
 
 ```sql
--- Current: 20+ tables defined via SQLAlchemy models
--- Issues:
---   1. Supabase schema.sql is out of sync with SQLAlchemy models
---   2. No Alembic migration history
---   3. RLS policies are all "allow everything" (dev-only)
+-- 当前: 20+ 张表由 SQLAlchemy 模型定义
+-- 问题:
+--   1. Supabase schema.sql 与 SQLAlchemy 模型不同步
+--   2. 无 Alembic 迁移历史
+--   3. RLS 策略全部 "允许所有"（仅开发用）
 
--- Action: Initialize Alembic, generate baseline migration from current models
+-- 操作: 初始化 Alembic，从当前模型生成基线迁移
 ```
 
-### Phase 2: Azure Database for PostgreSQL
+### 阶段二: Azure Database for PostgreSQL
 
-| Config | Value |
-|--------|-------|
-| Service | Azure Database for PostgreSQL - Flexible Server |
-| Version | PostgreSQL 16 |
-| Tier | General Purpose (D2ds_v5) → scale as needed |
-| HA | Zone-redundant HA |
-| Backup | Automated, 35-day retention |
-| Network | Private endpoint within Azure VNet |
+| 配置项 | 值 |
+|--------|------|
+| 服务 | Azure Database for PostgreSQL - Flexible Server |
+| 版本 | PostgreSQL 16 |
+| 规格 | 通用型 (D2ds_v5) → 按需扩容 |
+| 高可用 | 跨可用区冗余 |
+| 备份 | 自动备份，35 天保留 |
+| 网络 | Azure VNet 内私有端点 |
 
-### Phase 3: Schema per service (eventual)
+### 阶段三: 按服务拆分 Schema（最终）
 
-When migrating to microservices, each Go service owns its own DB schema:
+微服务化后，每个 Go 服务拥有自己的数据库 Schema:
 
-| Service | Schema | Key Tables |
-|---------|--------|-----------|
+| 服务 | Schema | 核心表 |
+|------|--------|--------|
 | order-service | `orders` | orders, order_items |
 | menu-service | `menus` | menu_categories, menu_items, modifiers |
 | table-service | `tables` | tables, reservations, waitlist |
@@ -397,239 +396,239 @@ When migrating to microservices, each Go service owns its own DB schema:
 | loyalty-service | `loyalty` | customer_loyalty, points, rewards |
 | staff-service | `staff` | staff, schedules |
 | inventory-service | `inventory` | inventory_items, transactions |
-| report-service | Read replicas | Aggregated views |
+| report-service | 只读副本 | 聚合视图 |
 
 ---
 
-## 8. Infrastructure (Azure)
+## 8. 基础设施 (Azure)
 
-### Core Azure Services
+### 核心 Azure 服务
 
-| Service | Purpose | Tier |
-|---------|---------|------|
-| **AKS** (Azure Kubernetes Service) | Container orchestration | Standard |
-| **Azure Database for PostgreSQL** | Primary database | Flexible Server |
-| **Azure Cache for Redis** | Session cache, pub/sub | Premium (for persistence) |
-| **Azure Service Bus** | Async messaging between services | Standard |
-| **Azure Blob Storage** | Images, G-Code files, uploads | Hot tier |
-| **Azure CDN** | Static asset delivery | Standard |
-| **Azure API Management** | API Gateway, rate limiting, auth | Developer → Standard |
-| **Azure Container Registry** | Docker image storage | Basic |
-| **Azure Monitor + Log Analytics** | Centralized logging, APM | Pay-as-you-go |
-| **Azure Application Insights** | Frontend + backend telemetry | Standard |
-| **Azure Key Vault** | Secret management | Standard |
+| 服务 | 用途 | 规格 |
+|------|------|------|
+| **AKS** (Azure Kubernetes Service) | 容器编排 | Standard |
+| **Azure Database for PostgreSQL** | 主数据库 | Flexible Server |
+| **Azure Cache for Redis** | 会话缓存、发布订阅 | Premium（支持持久化） |
+| **Azure Service Bus** | 服务间异步消息 | Standard |
+| **Azure Blob Storage** | 图片、G-Code 文件、上传 | Hot 层 |
+| **Azure CDN** | 静态资源分发 | Standard |
+| **Azure API Management** | API 网关、限流、认证 | Developer → Standard |
+| **Azure Container Registry** | Docker 镜像存储 | Basic |
+| **Azure Monitor + Log Analytics** | 集中日志、APM | 按量付费 |
+| **Azure Application Insights** | 前后端遥测 | Standard |
+| **Azure Key Vault** | 密钥管理 | Standard |
 
-### CI/CD Pipeline (GitHub Actions)
+### CI/CD 管道 (GitHub Actions)
 
 ```yaml
-# .github/workflows/deploy.yml (conceptual)
-triggers: push to main / PR
-steps:
-  1. Lint (golangci-lint, clippy, clang-tidy, eslint)
-  2. Test (go test, cargo test, ctest, jest)
-  3. Build Docker images per service
-  4. Push to Azure Container Registry
-  5. Deploy to AKS (staging)
-  6. Run integration tests
-  7. Manual approval → Deploy to AKS (production)
+# .github/workflows/ci.yml (概念)
+触发: push 到 main / PR
+步骤:
+  1. 代码检查 (golangci-lint, clippy, clang-tidy, eslint)
+  2. 测试 (go test, cargo test, ctest, jest)
+  3. 构建各服务 Docker 镜像
+  4. 推送到 Azure Container Registry
+  5. 部署到 AKS (预发布)
+  6. 运行集成测试
+  7. 人工审批 → 部署到 AKS (生产)
 ```
 
-### Monitoring Stack
+### 监控体系
 
-| Tool | Purpose |
-|------|---------|
-| Azure Monitor | Infrastructure metrics |
-| Application Insights | APM, distributed tracing |
-| Grafana (Azure Managed) | Custom dashboards |
-| Azure Alerts | PagerDuty/Slack notifications |
+| 工具 | 用途 |
+|------|------|
+| Azure Monitor | 基础设施指标 |
+| Application Insights | APM、分布式链路追踪 |
+| Grafana (Azure 托管) | 自定义仪表盘 |
+| Azure Alerts | PagerDuty/Slack 告警 |
 
 ---
 
-## 9. Development Workflow
+## 9. 开发工作流
 
-### Branch Strategy
+### 分支策略
 
 ```
-main          ← production-ready, protected
-├── develop   ← integration branch
+main          ← 生产就绪，受保护
+├── develop   ← 集成分支
 │   ├── feature/SOE-123-payment-integration
 │   ├── feature/SOE-124-mobile-app
 │   └── fix/SOE-125-order-race-condition
-└── release/v2.0.0  ← release candidate
+└── release/v2.0.0  ← 发布候选
 ```
 
-### Running Locally
+### 本地运行
 
 ```bash
-# Full stack via Docker
+# 全栈 Docker 启动
 docker-compose up -d
 
-# Backend only (hot reload)
+# 仅后端（热重载）
 cd backend
 source .venv/bin/activate
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-# Frontend only (hot reload)
+# 仅前端（热重载）
 cd frontend
 npm run dev
 
-# Backend API docs
+# 后端 API 文档
 open http://localhost:8000/docs
 ```
 
-### Adding a New API Endpoint
+### 新增 API 端点流程
 
-1. Create model in `backend/app/models/<domain>.py`
-2. Create schema in `backend/app/schemas/<domain>.py`
-3. Create router in `backend/app/api/v1/<domain>.py`
-4. Register in `backend/app/api/v1/router.py`
-5. Import model in `backend/app/models/__init__.py`
-6. Generate migration: `alembic revision --autogenerate -m "description"`
-7. Apply migration: `alembic upgrade head`
-8. Write tests in `backend/tests/test_<domain>.py`
+1. 在 `backend/app/models/<域>.py` 创建模型
+2. 在 `backend/app/schemas/<域>.py` 创建 Schema
+3. 在 `backend/app/api/v1/<域>.py` 创建路由
+4. 在 `backend/app/api/v1/router.py` 注册
+5. 在 `backend/app/models/__init__.py` 导入模型
+6. 生成迁移: `alembic revision --autogenerate -m "描述"`
+7. 执行迁移: `alembic upgrade head`
+8. 在 `backend/tests/test_<域>.py` 编写测试
 
-### Code Style
+### 代码风格
 
-| Language | Formatter | Linter |
-|----------|-----------|--------|
+| 语言 | 格式化器 | 检查器 |
+|------|---------|--------|
 | Python | Black + isort | Ruff |
 | TypeScript | Prettier | ESLint |
-| Go (future) | gofmt | golangci-lint |
-| Rust (future) | rustfmt | clippy |
-| C++ (future) | clang-format | clang-tidy |
+| Go (未来) | gofmt | golangci-lint |
+| Rust (未来) | rustfmt | clippy |
+| C++ (未来) | clang-format | clang-tidy |
 
 ---
 
-## 10. Security Checklist
+## 10. 安全清单
 
-### 🔴 Must Fix Before Production
+### 上线前必须修复
 
-- [ ] Change `SECRET_KEY` from `dev-secret-key-change-in-production`
-- [ ] Remove hardcoded passwords from `docker-compose.yml`
-- [ ] Implement proper Supabase RLS policies (currently `USING (true)`)
-- [ ] Add rate limiting to all API endpoints
-- [ ] Add HTTPS enforcement
-- [ ] Implement CSRF protection
-- [ ] Audit all SQL for injection vulnerabilities
-- [ ] Add request input sanitization
-- [ ] Remove or protect `/docs` and `/redoc` in production
+- [ ] 修改 `SECRET_KEY`（当前值: `dev-secret-key-change-in-production`）
+- [ ] 移除 `docker-compose.yml` 中的硬编码密码
+- [ ] 实现正确的 Supabase RLS 策略（当前 `USING (true)`）
+- [ ] 所有 API 端点添加请求限流
+- [ ] 强制 HTTPS
+- [ ] 实现 CSRF 防护
+- [ ] 审计所有 SQL 注入风险
+- [ ] 添加请求输入净化
+- [ ] 生产环境移除或保护 `/docs` 和 `/redoc`
 
-### 🟡 Should Do
+### 建议处理
 
-- [ ] Implement API key rotation strategy
-- [ ] Add audit logging for all data mutations
-- [ ] Set up Azure Key Vault for secret management
-- [ ] Implement OAuth 2.0 for third-party integrations
-- [ ] Add Content Security Policy headers
-- [ ] PCI-DSS compliance review for payment module
-
----
-
-## Appendix: Cleanup Log
-
-**Date:** 2026-02-21  
-**Executed by:** Project Lead
-
-| Action | Status |
-|--------|--------|
-| Delete `MobileAgent-main/`, `Open-AutoGLM-main/`, `UI-TARS-main/` | ✅ Done |
-| Delete `legacy-synapse-os/` | ✅ Done |
-| Delete `DEVELOPMENT.md`, `FEATURE_UPDATE.md` | ✅ Done |
-| Move assets to `assets/fonts/`, `assets/images/` | ✅ Done |
-| Move marketing page to `docs/marketing/` | ✅ Done |
-| Delete `icon_url/`, `frontend/.next.bak/` | ✅ Done |
-| Rewrite `.gitignore` (comprehensive) | ✅ Done |
-| Replace `README.md` with clean version | ✅ Done |
-| Initialize Alembic migrations | 🔲 Pending (next phase) |
-
-**Files removed:** ~1,100+  
-**Repo size reduced:** ~140MB+
+- [ ] 实现 API 密钥轮换策略
+- [ ] 所有数据变更添加审计日志
+- [ ] 配置 Azure Key Vault 管理密钥
+- [ ] 实现 OAuth 2.0 第三方集成
+- [ ] 添加 Content Security Policy 头
+- [ ] 支付模块 PCI-DSS 合规审查
 
 ---
 
-## Appendix B: 微服务骨架实现状态 (Monorepo Scaffold)
+## 附录 A: 清理日志
 
-**Date:** 2026-02-21  
-**搭建者:** Project Lead
+**日期:** 2026-02-21
+**执行者:** 项目负责人
 
-> 以下表格列出了每个微服务的文件及其实现状态。  
-> ✅ = 框架已搭建 (可编译/运行)  |  🔲 = 接口已定义，业务逻辑待实现  |  ❌ = 尚未创建
+| 操作 | 状态 |
+|------|------|
+| 删除 `MobileAgent-main/`、`Open-AutoGLM-main/`、`UI-TARS-main/` | 完成 |
+| 删除 `legacy-synapse-os/` | 完成 |
+| 删除 `DEVELOPMENT.md`、`FEATURE_UPDATE.md` | 完成 |
+| 资产移至 `assets/fonts/`、`assets/images/` | 完成 |
+| 营销页面移至 `docs/marketing/` | 完成 |
+| 删除 `icon_url/`、`frontend/.next.bak/` | 完成 |
+| 重写 `.gitignore`（完整版） | 完成 |
+| 替换 `README.md` | 完成 |
+| 初始化 Alembic 迁移 | 待执行（下一阶段） |
+
+**删除文件数:** ~1,100+
+**仓库体积减少:** ~140MB+
+
+---
+
+## 附录 B: 微服务骨架实现状态
+
+**日期:** 2026-02-21
+**搭建者:** 项目负责人
+
+> 以下表格列出每个微服务的文件及实现状态。
+> [已搭建] = 框架可编译/运行  |  [待实现] = 接口已定义，业务逻辑未写  |  [未创建] = 文件不存在
 
 ### Go 服务 (9 个核心业务 + 1 网关)
 
 | 服务 | 文件 | 状态 | 负责团队 |
 |------|------|------|---------|
-| **gateway** | `services/gateway/cmd/main.go` | ✅ 路由表完整 | 通用 |
-| | `internal/config/config.go` | ✅ 15+ 服务地址配置 | 通用 |
-| | `internal/middleware/auth.go` | ✅ JWT 认证中间件 | 通用 |
-| | `internal/middleware/middleware.go` | ✅ CORS, Logger, RequestID; 🔲 RateLimiter | 通用 |
-| | `internal/handler/handler.go` | ✅ 框架; 🔲 所有 ProxyTo* 方法 | 通用 |
-| | `Dockerfile` | ✅ 多阶段构建 | 通用 |
-| **order-service** | `cmd/main.go` | ✅ gRPC 服务器启动 | 通用 |
-| | `internal/handler/handler.go` | ✅ 框架; 🔲 CRUD + SplitCheck | 通用 |
-| | `internal/config/config.go` | ✅ | 通用 |
-| **menu-service** | `cmd/main.go` | ✅ gRPC 骨架 | 通用 |
-| **table-service** | `cmd/main.go` | ✅ gRPC 骨架 | 通用 |
-| **staff-service** | `cmd/main.go` | ✅ gRPC 骨架 | 通用 |
-| **inventory-service** | `cmd/main.go` | ✅ gRPC 骨架; 🔲 与 vision-engine 联动 | 通用 + 中国团队 |
-| **report-service** | `cmd/main.go` | ✅ gRPC 骨架 | 通用 |
-| **reservation-service** | `cmd/main.go` | ✅ gRPC 骨架 | 通用 |
-| **loyalty-service** | `cmd/main.go` | ✅ gRPC 骨架 | 通用 |
+| **gateway** | `services/gateway/cmd/main.go` | [已搭建] 路由表完整 | 通用 |
+| | `internal/config/config.go` | [已搭建] 15+ 服务地址配置 | 通用 |
+| | `internal/middleware/auth.go` | [已搭建] JWT 认证中间件 | 通用 |
+| | `internal/middleware/middleware.go` | [已搭建] CORS, 日志, 请求ID; [待实现] 限流 | 通用 |
+| | `internal/handler/handler.go` | [已搭建] 框架; [待实现] 所有 ProxyTo* 方法 | 通用 |
+| | `Dockerfile` | [已搭建] 多阶段构建 | 通用 |
+| **order-service** | `cmd/main.go` | [已搭建] gRPC 服务器 | 通用 |
+| | `internal/handler/handler.go` | [已搭建] 框架; [待实现] CRUD + 分单 | 通用 |
+| | `internal/config/config.go` | [已搭建] | 通用 |
+| **menu-service** | `cmd/main.go` | [已搭建] gRPC 骨架 | 通用 |
+| **table-service** | `cmd/main.go` | [已搭建] gRPC 骨架 | 通用 |
+| **staff-service** | `cmd/main.go` | [已搭建] gRPC 骨架 | 通用 |
+| **inventory-service** | `cmd/main.go` | [已搭建] gRPC 骨架; [待实现] 与 vision-engine 联动 | 通用 + 中国团队 |
+| **report-service** | `cmd/main.go` | [已搭建] gRPC 骨架 | 通用 |
+| **reservation-service** | `cmd/main.go` | [已搭建] gRPC 骨架 | 通用 |
+| **loyalty-service** | `cmd/main.go` | [已搭建] gRPC 骨架 | 通用 |
 
 ### Rust 服务 (Cargo Workspace)
 
 | 服务 | 文件 | 状态 | 负责团队 |
 |------|------|------|---------|
-| **payment-engine** | `src/main.rs` | ✅ Tokio 异步框架 | 通用 |
-| | `src/payment.rs` | ✅ 类型定义 + PaymentProcessor trait; 🔲 Stripe 实现 | 通用 |
-| | `src/config.rs` | ✅ | 通用 |
-| | `Cargo.toml` | ✅ | 通用 |
-| **event-bus** | `src/main.rs` | ✅ 骨架; 🔲 WebSocket 管理 + 事件路由 | 通用 |
-| **analytics-pipeline** | `src/main.rs` | ✅ 骨架; 🔲 全部待实现 | 通用 |
+| **payment-engine** | `src/main.rs` | [已搭建] Tokio 异步框架 | 通用 |
+| | `src/payment.rs` | [已搭建] 类型 + PaymentProcessor trait; [待实现] Stripe | 通用 |
+| | `src/config.rs` | [已搭建] | 通用 |
+| **event-bus** | `src/main.rs` | [已搭建] 骨架; [待实现] WebSocket + 事件路由 | 通用 |
+| **analytics-pipeline** | `src/main.rs` | [已搭建] 骨架; [待实现] 全部 | 通用 |
 
-### C++ 服务 (📌 中国团队重点)
+### C++ 服务（中国团队重点负责）
 
 | 服务 | 文件 | 状态 | 负责团队 |
 |------|------|------|---------|
-| **robot-controller** | `CMakeLists.txt` | ✅ 完整构建配置 | 🇨🇳 中国硬件团队 |
-| | `src/main.cpp` | ✅ 入口 + G-Code 演示 | 🇨🇳 |
-| | `include/.../gcode_generator.h` | ✅ 完整 API (stir_fry, add_ingredient, plate, clean, adjust_for_taste) | 🇨🇳 |
-| | `src/gcode_generator.cpp` | ✅ stir_fry 基础实现; 🔲 其余方法 | 🇨🇳 |
-| | `include/.../robot_controller.h` | ✅ 完整控制器 API (connect, send_gcode, emergency_stop, telemetry) | 🇨🇳 |
-| | `src/robot_controller.cpp` | 🔲 全部待实现 (占位) | 🇨🇳 |
-| | `include/.../serial_comm.h` | ✅ 串口通信接口 | 🇨🇳 |
-| | `src/serial_comm.cpp` | 🔲 全部待实现 (占位) | 🇨🇳 |
-| **vision-engine** | `src/main.cpp` | ✅ 骨架; 🔲 全部待实现 | 🇨🇳 中国 AI 团队 |
-| **taste-engine** | `src/main.cpp` | ✅ 骨架; 🔲 全部待实现 | 🇨🇳 中国算法团队 |
+| **robot-controller** | `CMakeLists.txt` | [已搭建] 完整构建配置 | 中国硬件团队 |
+| | `src/main.cpp` | [已搭建] 入口 + G-Code 演示 | 中国硬件团队 |
+| | `include/.../gcode_generator.h` | [已搭建] 完整 API | 中国硬件团队 |
+| | `src/gcode_generator.cpp` | [已搭建] stir_fry 基础实现; [待实现] 其余 | 中国硬件团队 |
+| | `include/.../robot_controller.h` | [已搭建] 完整控制器 API | 中国硬件团队 |
+| | `src/robot_controller.cpp` | [待实现] 全部占位 | 中国硬件团队 |
+| | `include/.../serial_comm.h` | [已搭建] 串口通信接口 | 中国硬件团队 |
+| | `src/serial_comm.cpp` | [待实现] 全部占位 | 中国硬件团队 |
+| **vision-engine** | `src/main.cpp` | [已搭建] 骨架; [待实现] 全部 | 中国 AI 团队 |
+| **taste-engine** | `src/main.cpp` | [已搭建] 骨架; [待实现] 全部 | 中国算法团队 |
 
 ### Python AI 服务
 
 | 文件 | 状态 | 负责团队 |
 |------|------|---------|
-| `app/main.py` | ✅ FastAPI 框架 + 4 个 API 端点定义; 🔲 全部业务逻辑待迁移 | 通用 |
-| `requirements.txt` | ✅ | 通用 |
+| `app/main.py` | [已搭建] FastAPI + 4 个端点; [待实现] 全部业务逻辑 | 通用 |
+| `requirements.txt` | [已搭建] | 通用 |
 
 ### gRPC Proto 定义
 
 | 文件 | 状态 |
 |------|------|
-| `proto/synapse/v1/common.proto` | ✅ 分页、金额、时间戳、操作结果 |
-| `proto/synapse/v1/order.proto` | ✅ OrderService 完整 RPC 定义 (6 个方法) |
-| `proto/synapse/v1/robot.proto` | ✅ RobotControllerService (5 个方法含 Stream) |
-| `proto/synapse/v1/payment.proto` | ✅ PaymentService (4 个方法) |
-| `proto/synapse/v1/menu.proto` | 🔲 待创建 |
-| `proto/synapse/v1/table.proto` | 🔲 待创建 |
-| `proto/synapse/v1/event.proto` | 🔲 待创建 |
+| `proto/synapse/v1/common.proto` | [已搭建] 分页、金额、时间戳、操作结果 |
+| `proto/synapse/v1/order.proto` | [已搭建] OrderService 完整 RPC 定义 (6 个方法) |
+| `proto/synapse/v1/robot.proto` | [已搭建] RobotControllerService (5 个方法含 Stream) |
+| `proto/synapse/v1/payment.proto` | [已搭建] PaymentService (4 个方法) |
+| `proto/synapse/v1/menu.proto` | [未创建] |
+| `proto/synapse/v1/table.proto` | [未创建] |
+| `proto/synapse/v1/event.proto` | [未创建] |
 
 ### 基础设施
 
 | 文件 | 状态 |
 |------|------|
-| `infra/terraform/main.tf` | ✅ AKS + PostgreSQL + Redis + ACR + Key Vault |
-| `infra/k8s/base/deployment.yaml` | ✅ Gateway, Order, Payment, Robot K8s 清单 |
-| `.github/workflows/ci.yml` | ✅ Go/Rust/C++/Python/Frontend CI + AKS 部署 |
+| `infra/terraform/main.tf` | [已搭建] AKS + PostgreSQL + Redis + ACR + Key Vault |
+| `infra/k8s/base/deployment.yaml` | [已搭建] Gateway, Order, Payment, Robot 部署清单 |
+| `.github/workflows/ci.yml` | [已搭建] Go/Rust/C++/Python/Frontend CI + AKS 部署 |
 
 ---
 
-*This document is the single source of truth for Synapse OS engineering. Update it as the architecture evolves.*
+*本文档是 Synapse OS 工程团队的唯一权威技术参考。架构演进时必须同步更新。*
 
+(c) 2026 Panshaker Inc. 版权所有

@@ -217,7 +217,7 @@ spec:
 
 # ==========================================
 # C++ 机器人控制器
-# 📌 由中国团队部署和维护
+# 由中国团队部署和维护
 # ==========================================
 
 apiVersion: apps/v1
@@ -275,7 +275,7 @@ spec:
 
 # ==========================================
 # Secrets (生产环境使用 Azure Key Vault CSI Driver)
-# 🔲 以下为开发模板，生产环境不要提交到 Git
+# 以下为开发模板，生产环境不要提交到 Git
 # ==========================================
 
 apiVersion: v1
@@ -289,4 +289,4 @@ data:
   # echo -n "value" | base64
   jwt-secret: Y2hhbmdlLW1lLWluLXByb2R1Y3Rpb24=
   database-url: cG9zdGdyZXM6Ly9zeW5hcHNlX2FkbWluOnBhc3N3b3JkQHBzcWwtc3luYXBzZS1vcy5wb3N0Z3Jlcy5kYXRhYmFzZS5henVyZS5jb206NTQzMi9zeW5hcHNlX29z
-  stripe-api-key: ""  # 🔲 待配置
+  stripe-api-key: ""  # 待配置

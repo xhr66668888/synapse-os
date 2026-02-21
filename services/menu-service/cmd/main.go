@@ -1,7 +1,7 @@
 // Synapse OS — 菜单微服务
 // Menu Service: 菜单分类、菜品、修饰符 CRUD
 //
-// ⚠️ 功能状态: 🔲 骨架已搭建，业务逻辑待从 Python 迁移
+// 功能状态: 骨架已搭建，业务逻辑待从 Python 迁移
 // 参考: backend/app/api/v1/menu.py, backend/app/models/menu.py
 
 package main
@@ -35,13 +35,13 @@ func main() {
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
-		log.Fatalf("❌ 菜单服务启动失败: %v", err)
+		log.Fatalf("菜单服务启动失败: %v", err)
 	}
 
 	go func() {
-		log.Printf("🍽️ 菜单服务 (menu-service) 启动在 :%s", port)
+		log.Printf("菜单服务 (menu-service) 启动在 :%s", port)
 		if err := grpcServer.Serve(lis); err != nil {
-			log.Fatalf("❌ gRPC 服务失败: %v", err)
+			log.Fatalf("gRPC 服务失败: %v", err)
 		}
 	}()
 
@@ -49,7 +49,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	grpcServer.GracefulStop()
-	log.Println("👋 菜单服务已停止")
+	log.Println("菜单服务已停止")
 }
 
 type healthChecker struct {

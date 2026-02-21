@@ -1,6 +1,6 @@
 // Synapse OS — 员工微服务
 // Staff Service: 员工 CRUD、排班管理
-// ⚠️ 功能状态: 🔲 骨架已搭建
+// 功能状态: 骨架已搭建
 // 参考: backend/app/api/v1/staff.py, backend/app/api/v1/schedule.py
 
 package main
@@ -24,7 +24,7 @@ func main() {
 
 	lis, _ := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	go func() {
-		log.Printf("👤 员工服务 (staff-service) 启动在 :%s", port)
+		log.Printf("员工服务 (staff-service) 启动在 :%s", port)
 		grpcServer.Serve(lis)
 	}()
 

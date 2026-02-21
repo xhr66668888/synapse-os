@@ -23,8 +23,8 @@ enum PaymentMethod {
   PAYMENT_METHOD_CASH = 1;
   PAYMENT_METHOD_CARD = 2;        // Stripe
   PAYMENT_METHOD_DIGITAL_WALLET = 3; // Apple Pay / Google Pay
-  PAYMENT_METHOD_WECHAT = 4;      // 微信支付 🔲 待实现
-  PAYMENT_METHOD_ALIPAY = 5;      // 支付宝 🔲 待实现
+  PAYMENT_METHOD_WECHAT = 4;      // 微信支付 待实现
+  PAYMENT_METHOD_ALIPAY = 5;      // 支付宝 待实现
 }
 
 enum PaymentStatus {

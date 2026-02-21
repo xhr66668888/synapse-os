@@ -3,7 +3,7 @@
 // ==========================================
 // 支付处理核心逻辑
 //
-// 🔲 全部待实现 — 以下是接口定义，具体实现需要:
+// 全部待实现 — 以下是接口定义，具体实现需要:
 //   1. 注册 Stripe 商户账户
 //   2. 获取 API 密钥 (存入 Azure Key Vault)
 //   3. 实现 PaymentIntent 创建流程
@@ -37,9 +37,9 @@ pub enum PaymentMethod {
     Cash,
     /// Apple Pay / Google Pay (Stripe)
     DigitalWallet,
-    /// 微信支付 (中国市场) 🔲 待实现
+    /// 微信支付 (中国市场) 待实现
     WeChatPay,
-    /// 支付宝 (中国市场) 🔲 待实现
+    /// 支付宝 (中国市场) 待实现
     AliPay,
 }
 
@@ -86,12 +86,12 @@ pub enum PaymentError {
 }
 
 // ==========================================
-// Stripe 支付处理器 🔲 待实现
+// Stripe 支付处理器 待实现
 // ==========================================
 
 /// Stripe 支付处理器
 pub struct StripeProcessor {
-    // pub client: stripe::Client,  // 🔲 需要 stripe crate
+    // pub client: stripe::Client,  // 需要 stripe crate
     pub api_key: String,
 }
 

@@ -1,6 +1,6 @@
 // Synapse OS — 忠诚度微服务
 // Loyalty Service: 会员体系、积分系统、奖励商城
-// ⚠️ 功能状态: 🔲 骨架已搭建
+// 功能状态: 骨架已搭建
 // 参考: backend/app/api/v1/loyalty.py, backend/app/models/loyalty.py
 
 package main
@@ -24,7 +24,7 @@ func main() {
 
 	lis, _ := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	go func() {
-		log.Printf("⭐ 忠诚度服务 (loyalty-service) 启动在 :%s", port)
+		log.Printf("忠诚度服务 (loyalty-service) 启动在 :%s", port)
 		grpcServer.Serve(lis)
 	}()
 

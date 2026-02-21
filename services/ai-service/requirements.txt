@@ -1,10 +1,10 @@
 # Synapse OS — AI 服务 (Python)
 # 从现有 backend/app/services/ 迁移
 #
-# ⚠️ 功能状态
-# ✅ 可复用: 现有 Python backend 中的 AI 服务代码
-# 🔲 待迁移: 从 backend/app/services/ 提取到此独立服务
-# 🔲 待对接: MiniMax API (替换 ZhipuAI)
+# 功能状态
+# 可复用: 现有 Python backend 中的 AI 服务代码
+# 待迁移: 从 backend/app/services/ 提取到此独立服务
+# 待对接: MiniMax API (替换 ZhipuAI)
 
 fastapi==0.109.2
 uvicorn==0.27.1

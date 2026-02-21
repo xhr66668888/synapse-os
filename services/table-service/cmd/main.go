@@ -1,7 +1,7 @@
 // Synapse OS — 桌台微服务
 // Table Service: 桌台管理、QR 码生成、状态追踪
 //
-// ⚠️ 功能状态: 🔲 骨架已搭建，业务逻辑待从 Python 迁移
+// 功能状态: 骨架已搭建，业务逻辑待从 Python 迁移
 // 参考: backend/app/api/v1/tables.py, backend/app/models/table.py
 
 package main
@@ -32,13 +32,13 @@ func main() {
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
-		log.Fatalf("❌ 桌台服务启动失败: %v", err)
+		log.Fatalf("桌台服务启动失败: %v", err)
 	}
 
 	go func() {
-		log.Printf("🪑 桌台服务 (table-service) 启动在 :%s", port)
+		log.Printf("桌台服务 (table-service) 启动在 :%s", port)
 		if err := grpcServer.Serve(lis); err != nil {
-			log.Fatalf("❌ gRPC 服务失败: %v", err)
+			log.Fatalf("gRPC 服务失败: %v", err)
 		}
 	}()
 

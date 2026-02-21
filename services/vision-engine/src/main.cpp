@@ -3,10 +3,10 @@
  * Vision Engine: 摄像头 AI 监控库存
  *
  * ==========================================
- * 📌 此模块由中国 AI/硬件团队维护
+ * 此模块由中国 AI/硬件团队维护
  * ==========================================
  *
- * 🔲 全部待实现
+ * 全部待实现
  *
  * 规划功能:
  *   1. 摄像头接入 (USB / IP 摄像头)
@@ -25,13 +25,13 @@
 #include <iostream>
 
 int main() {
-  std::cout << "👁️ 视觉库存监控引擎 (vision-engine) 启动" << std::endl;
-  std::cout << "🔲 全部功能待实现 — 需要以下依赖:" << std::endl;
+  std::cout << "视觉库存监控引擎 (vision-engine) 启动" << std::endl;
+  std::cout << "全部功能待实现 — 需要以下依赖:" << std::endl;
   std::cout << "  - OpenCV 4.x" << std::endl;
   std::cout << "  - YOLO v8 模型 (放在 models/ 目录)" << std::endl;
   std::cout << "  - gRPC C++ 库" << std::endl;
   std::cout << "  - (可选) TensorRT / CUDA" << std::endl;
-  std::cout << "\n📌 由中国 AI 团队负责实现" << std::endl;
+  std::cout << "\n由中国 AI 团队负责实现" << std::endl;
   std::cin.get();
   return 0;
 }

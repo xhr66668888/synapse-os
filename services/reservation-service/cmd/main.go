@@ -1,6 +1,6 @@
 // Synapse OS — 预订微服务
 // Reservation Service: 预订管理、等位队列
-// ⚠️ 功能状态: 🔲 骨架已搭建
+// 功能状态: 骨架已搭建
 // 参考: backend/app/api/v1/reservations.py
 
 package main
@@ -24,7 +24,7 @@ func main() {
 
 	lis, _ := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	go func() {
-		log.Printf("📅 预订服务 (reservation-service) 启动在 :%s", port)
+		log.Printf("预订服务 (reservation-service) 启动在 :%s", port)
 		grpcServer.Serve(lis)
 	}()
 

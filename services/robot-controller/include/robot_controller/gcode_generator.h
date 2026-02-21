@@ -3,7 +3,7 @@
  * 将烹饪参数转换为机器人可执行的 G-Code 指令序列
  *
  * ==========================================
- * 📌 此模块由中国硬件团队维护
+ * 此模块由中国硬件团队维护
  * ==========================================
  *
  * G-Code 约定:
@@ -16,10 +16,10 @@
  *   M107 - 关闭火力
  *   M84  - 关闭电机 (烹饪结束)
  *
- * ✅ 已实现: 基础指令生成框架
- * 🔲 待实现: 复杂翻炒路径规划
- * 🔲 待实现: 多菜品并行烹饪调度
- * 🔲 待实现: 基于口味偏好的参数调整 (需要与 taste-engine 联动)
+ * 已实现: 基础指令生成框架
+ * 待实现: 复杂翻炒路径规划
+ * 待实现: 多菜品并行烹饪调度
+ * 待实现: 基于口味偏好的参数调整 (需要与 taste-engine 联动)
  */
 
 #pragma once
@@ -41,7 +41,7 @@ public:
    * @param heat_level 火力等级 (1-10)
    * @return G-Code 指令序列
    *
-   * ✅ 已实现 (基础版本)
+   * 已实现 (基础版本)
    */
   std::vector<std::string> generate_stir_fry(double oil_temp_celsius,
                                              int stir_duration_sec,
@@ -55,7 +55,7 @@ public:
    * @param amount_grams 用量 (克)
    * @return G-Code 指令序列
    *
-   * 🔲 待实现
+   * 待实现
    */
   std::vector<std::string> generate_add_ingredient(int ingredient_slot,
                                                    double amount_grams) const;
@@ -64,7 +64,7 @@ public:
    * 生成装盘指令
    * 控制机器人将菜品从锅中转移到盘中
    *
-   * 🔲 待实现
+   * 待实现
    */
   std::vector<std::string> generate_plate() const;
 
@@ -72,7 +72,7 @@ public:
    * 生成清洗指令
    * 烹饪完成后自动清洗锅具
    *
-   * 🔲 待实现
+   * 待实现
    */
   std::vector<std::string> generate_clean() const;
 
@@ -84,7 +84,7 @@ public:
    * @param base_commands 基础指令序列
    * @return 调整后的指令序列
    *
-   * 🔲 待实现 (需要与 taste-engine 联动)
+   * 待实现 (需要与 taste-engine 联动)
    */
   std::vector<std::string>
   adjust_for_taste(const std::string &user_id,

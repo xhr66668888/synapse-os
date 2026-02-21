@@ -5,8 +5,8 @@ use std::env;
 pub struct Config {
     pub grpc_port: u16,
     pub database_url: String,
-    pub stripe_api_key: String,     // 🔲 从 Azure Key Vault 获取
-    pub stripe_webhook_secret: String, // 🔲 从 Azure Key Vault 获取
+    pub stripe_api_key: String,     // 从 Azure Key Vault 获取
+    pub stripe_webhook_secret: String, // 从 Azure Key Vault 获取
 }
 
 impl Config {

@@ -2,9 +2,9 @@
 // Synapse OS — 机器人控制服务 Proto
 // Robot Controller gRPC API 定义
 //
-// 📌 此 proto 由中美双方团队共同维护
-// 📌 C++ 实现: services/robot-controller/ (中国团队)
-// 📌 Go 调用方: services/gateway/ (美国团队)
+// 此 proto 由中美双方团队共同维护
+// C++ 实现: services/robot-controller/ (中国团队)
+// Go 调用方: services/gateway/ (美国团队)
 // ==========================================
 
 syntax = "proto3";
@@ -63,7 +63,7 @@ message CookingTaskRequest {
 }
 
 // 口味调整参数
-// 📌 与 taste-engine 联动
+// 与 taste-engine 联动
 message TasteAdjustment {
   double salt_level = 1;           // 咸度 (0.0-1.0, 0.5=标准)
   double sweet_level = 2;          // 甜度

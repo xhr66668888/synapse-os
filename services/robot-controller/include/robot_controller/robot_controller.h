@@ -1,6 +1,6 @@
 /**
  * 机器人控制器核心类
- * 📌 中国硬件团队维护
+ * 中国硬件团队维护
  *
  * 职责:
  *   - 管理与物理机器人的连接 (串口/TCP)
@@ -47,7 +47,7 @@ public:
   ~RobotController() = default;
 
   // ==========================================
-  // 连接管理 🔲 全部待实现
+  // 连接管理 全部待实现
   // ==========================================
 
   /**
@@ -55,24 +55,24 @@ public:
    * @param serial_port 串口设备 (例如 /dev/ttyUSB0)
    * @return 是否连接成功
    *
-   * 🔲 待实现 — 需要根据机器人通信协议实现
+   * 待实现 — 需要根据机器人通信协议实现
    */
   bool connect(const std::string &serial_port);
 
   /**
    * 断开连接
-   * 🔲 待实现
+   * 待实现
    */
   void disconnect();
 
   /**
    * 检查连接状态
-   * 🔲 待实现
+   * 待实现
    */
   bool is_connected() const;
 
   // ==========================================
-  // 指令执行 🔲 全部待实现
+  // 指令执行 全部待实现
   // ==========================================
 
   /**
@@ -80,7 +80,7 @@ public:
    * @param gcode G-Code 指令字符串
    * @return 是否发送成功
    *
-   * 🔲 待实现 — 通过串口发送
+   * 待实现 — 通过串口发送
    */
   bool send_gcode(const std::string &gcode);
 
@@ -89,7 +89,7 @@ public:
    * @param commands 指令列表
    * @return 是否全部执行成功
    *
-   * 🔲 待实现 — 需要处理指令间的时序和等待
+   * 待实现 — 需要处理指令间的时序和等待
    */
   bool execute_sequence(const std::vector<std::string> &commands);
 
@@ -98,17 +98,17 @@ public:
    * 立即停止所有动作，关闭火力
    * 优先级最高，任何时刻都可以调用
    *
-   * 🔲 待实现
+   * 待实现
    */
   void emergency_stop();
 
   // ==========================================
-  // 状态监控 🔲 全部待实现
+  // 状态监控 全部待实现
   // ==========================================
 
   /**
    * 获取当前遥测数据
-   * 🔲 待实现
+   * 待实现
    */
   RobotTelemetry get_telemetry() const;
 
@@ -118,12 +118,12 @@ public:
    *
    * @param callback 回调函数，每当状态变化时被调用
    *
-   * 🔲 待实现
+   * 待实现
    */
   void on_status_change(StatusCallback callback);
 
   // ==========================================
-  // gRPC 服务器 🔲 待实现
+  // gRPC 服务器 待实现
   // ==========================================
 
   /**
@@ -132,15 +132,15 @@ public:
    *
    * @param port gRPC 端口 (默认 50054)
    *
-   * 🔲 待实现 — proto 定义在 proto/synapse/v1/robot.proto
+   * 待实现 — proto 定义在 proto/synapse/v1/robot.proto
    */
   void start_grpc_server(int port);
 
 private:
   RobotStatus status_ = RobotStatus::OFFLINE;
   RobotTelemetry telemetry_{};
-  // 🔲 串口连接句柄
-  // 🔲 gRPC 服务器实例
+  // 串口连接句柄
+  // gRPC 服务器实例
 };
 
 } // namespace synapse

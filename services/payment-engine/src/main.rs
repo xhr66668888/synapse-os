@@ -9,14 +9,14 @@
 //   - 并发安全: 所有权系统防止数据竞争
 // ==========================================
 //
-// ⚠️ 功能状态
-// ✅ 已实现: 服务框架、gRPC 服务器、健康检查
-// 🔲 未实现: Stripe API 集成
-// 🔲 未实现: Square API 集成
-// 🔲 未实现: 微信支付 / 支付宝 (中国市场)
-// 🔲 未实现: 退款流程
-// 🔲 未实现: Webhook 处理
-// 🔲 未实现: 对账系统
+// 功能状态
+// 已实现: 服务框架、gRPC 服务器、健康检查
+// 未实现: Stripe API 集成
+// 未实现: Square API 集成
+// 未实现: 微信支付 / 支付宝 (中国市场)
+// 未实现: 退款流程
+// 未实现: Webhook 处理
+// 未实现: 对账系统
 //
 // 部署: Azure AKS
 // 端口: 50052 (gRPC)
@@ -36,8 +36,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let addr: SocketAddr = "0.0.0.0:50052".parse()?;
 
-    info!("💳 支付引擎 (payment-engine) 启动在 {}", addr);
-    info!("⚠️  Stripe/Square 集成待实现");
+    info!("支付引擎 (payment-engine) 启动在 {}", addr);
+    info!(" Stripe/Square 集成待实现");
 
     // TODO: 启动 gRPC 服务器
     // tonic::transport::Server::builder()
@@ -46,9 +46,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     .await?;
 
     // 临时: 保持进程存活
-    info!("🔲 支付引擎骨架已启动，等待 proto 编译和支付 API 集成");
+    info!("支付引擎骨架已启动，等待 proto 编译和支付 API 集成");
     tokio::signal::ctrl_c().await?;
-    info!("👋 支付引擎已停止");
+    info!("支付引擎已停止");
 
     Ok(())
 }
