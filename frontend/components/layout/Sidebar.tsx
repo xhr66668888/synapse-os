@@ -92,8 +92,8 @@ export function Sidebar() {
                             href={item.path}
                             className={`flex items-center gap-3 px-4 py-2.5 transition-colors duration-100 ${
                                 isActive
-                                    ? 'bg-surface-dark-2 text-text-inverse border-l-[3px] border-l-white'
-                                    : 'text-text-muted hover:bg-surface-dark-2 hover:text-text-inverse border-l-[3px] border-l-transparent'
+                                    ? 'bg-action text-white border-l-[3px] border-l-white'
+                                    : 'text-text-muted hover:bg-surface-dark-3 hover:text-white border-l-[3px] border-l-transparent'
                             }`}
                         >
                             {isCustomIcon ? (
@@ -123,7 +123,7 @@ export function Sidebar() {
                         className="w-8 h-8 rounded-sm object-cover"
                     />
                     <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium truncate text-text-inverse">Demo 餐厅</div>
+                        <div className="text-sm font-medium truncate text-white">Demo 餐厅</div>
                         <div className="text-xs text-text-muted truncate">管理员</div>
                     </div>
                     <LogOut className="w-4 h-4 text-text-muted hover:text-danger transition-colors" />

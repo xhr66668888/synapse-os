@@ -10,59 +10,59 @@ const config: Config = {
         extend: {
             // 语义色彩体系 — 色彩即状态，没有例外
             colors: {
-                // 主操作（近黑色）
+                // 主操作（品牌红）
                 action: {
-                    DEFAULT: '#1A1A1A',
+                    DEFAULT: '#BB0000',
                     fg: '#FFFFFF',
-                    hover: '#333333',
+                    hover: '#990000',
                 },
                 // 成功/完成/上架/已支付/已上菜
                 success: {
                     DEFAULT: '#00A550',
                     fg: '#FFFFFF',
-                    bg: 'rgba(0, 165, 80, 0.12)',
+                    bg: '#003300',
                 },
                 // 处理中/待接单/制作中
                 warning: {
                     DEFAULT: '#FF8C00',
-                    fg: '#1A1A1A',
-                    bg: 'rgba(255, 140, 0, 0.12)',
+                    fg: '#000000',
+                    bg: '#331A00',
                 },
                 // 报错/缺货/下架/催单/取消
                 danger: {
                     DEFAULT: '#CC1100',
                     fg: '#FFFFFF',
-                    bg: 'rgba(204, 17, 0, 0.12)',
+                    bg: '#330000',
                 },
                 // 信息提示/平台标识
                 info: {
                     DEFAULT: '#005BBB',
                     fg: '#FFFFFF',
-                    bg: 'rgba(0, 91, 187, 0.12)',
+                    bg: '#001133',
                 },
-                // 表面色
+                // 表面色（全黑底主题）
                 surface: {
-                    base: '#F0EFEB',
-                    raised: '#FFFFFF',
-                    sunken: '#E4E3DF',
+                    base: '#111111',
+                    raised: '#1E1E1E',
+                    sunken: '#0A0A0A',
                     dark: '#1A1A1A',
                     'dark-2': '#2A2A2A',
                     'dark-3': '#363636',
                 },
-                // 文字色
+                // 文字色（浅色，适配深色底）
                 text: {
-                    primary: '#1A1A1A',
-                    secondary: '#5A5A5A',
-                    muted: '#8A8A8A',
-                    disabled: '#BBBBBB',
-                    inverse: '#FFFFFF',
+                    primary: '#EEEEEE',
+                    secondary: '#BBBBBB',
+                    muted: '#777777',
+                    disabled: '#444444',
+                    inverse: '#111111',
                 },
-                // 边框色
+                // 边框色（深色底可见）
                 border: {
-                    DEFAULT: '#CECECE',
-                    strong: '#8A8A8A',
-                    focus: '#1A1A1A',
-                    light: '#E4E3DF',
+                    DEFAULT: '#333333',
+                    strong: '#555555',
+                    focus: '#FFFFFF',
+                    light: '#222222',
                 },
             },
             // 扁平工业风圆角
@@ -74,8 +74,8 @@ const config: Config = {
             },
             // 克制的阴影
             boxShadow: {
-                'card': '0 1px 3px rgba(0, 0, 0, 0.12)',
-                'raised': '0 2px 8px rgba(0, 0, 0, 0.16)',
+                'card': '0 1px 3px rgba(0, 0, 0, 0.6)',
+                'raised': '0 2px 8px rgba(0, 0, 0, 0.7)',
             },
             // 字体
             fontFamily: {

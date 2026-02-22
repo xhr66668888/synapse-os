@@ -18,51 +18,48 @@
 
 /* ========== CSS 自定义属性（语义色） ========== */
 :root {
-    --color-action: #1A1A1A;
+    /* 品牌/主操作 — 深红 */
+    --color-action: #BB0000;
     --color-action-fg: #FFFFFF;
-    --color-action-hover: #333333;
+    --color-action-hover: #990000;
+
+    /* 状态色 */
     --color-success: #00A550;
     --color-success-fg: #FFFFFF;
-    --color-success-bg: rgba(0, 165, 80, 0.12);
+    --color-success-bg: #003300;
+
     --color-warning: #FF8C00;
-    --color-warning-fg: #1A1A1A;
-    --color-warning-bg: rgba(255, 140, 0, 0.12);
+    --color-warning-fg: #000000;
+    --color-warning-bg: #331A00;
+
     --color-danger: #CC1100;
     --color-danger-fg: #FFFFFF;
-    --color-danger-bg: rgba(204, 17, 0, 0.12);
+    --color-danger-bg: #330000;
+
     --color-info: #005BBB;
     --color-info-fg: #FFFFFF;
-    --color-info-bg: rgba(0, 91, 187, 0.12);
+    --color-info-bg: #001133;
 
-    --surface-base: #F0EFEB;
-    --surface-raised: #FFFFFF;
-    --surface-sunken: #E4E3DF;
+    /* 表面色 — 全黑底主题 */
+    --surface-base: #111111;
+    --surface-raised: #1E1E1E;
+    --surface-sunken: #0A0A0A;
     --surface-dark: #1A1A1A;
     --surface-dark-2: #2A2A2A;
     --surface-dark-3: #363636;
 
-    --text-primary: #1A1A1A;
-    --text-secondary: #5A5A5A;
-    --text-muted: #8A8A8A;
-    --text-disabled: #BBBBBB;
-    --text-inverse: #FFFFFF;
-
-    --border-default: #CECECE;
-    --border-strong: #8A8A8A;
-    --border-focus: #1A1A1A;
-    --border-light: #E4E3DF;
-}
-
-/* KDS 终端主题覆盖 */
-[data-terminal="kds"] {
-    --surface-base: #1A1A1A;
-    --surface-raised: #2A2A2A;
-    --surface-sunken: #111111;
-    --text-primary: #F0EFEB;
-    --text-secondary: #AAAAAA;
+    /* 文字色 — 浅色，适配深色底 */
+    --text-primary: #EEEEEE;
+    --text-secondary: #BBBBBB;
     --text-muted: #777777;
-    --border-default: #404040;
-    --border-light: #333333;
+    --text-disabled: #444444;
+    --text-inverse: #111111;
+
+    /* 边框色 — 深色底可见 */
+    --border-default: #333333;
+    --border-strong: #555555;
+    --border-focus: #FFFFFF;
+    --border-light: #222222;
 }
 
 /* ========== Base Styles ========== */
@@ -95,8 +92,8 @@ html, body {
 
 /* Selection */
 ::selection {
-    background-color: rgba(0, 91, 187, 0.2);
-    color: var(--text-primary);
+    background-color: rgba(187, 0, 0, 0.5);
+    color: #FFFFFF;
 }
 
 /* ========== Component Layer ========== */
@@ -113,7 +110,7 @@ html, body {
         background-color: var(--color-action-hover);
     }
     .btn-action:active:not(:disabled) {
-        background-color: #000000;
+        background-color: #770000;
     }
 
     .btn-action-sm {
@@ -166,39 +163,39 @@ html, body {
         background-color: var(--surface-sunken);
     }
 
-    /* --- 徽章/状态系统 --- */
+    /* --- 徽章/状态系统 — 实心色块，高对比 --- */
     .badge-pending {
-        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-semibold uppercase tracking-wider;
-        background-color: var(--color-warning-bg);
-        color: var(--color-warning);
+        @apply inline-flex items-center px-2.5 py-1 rounded-xs text-sm font-bold uppercase tracking-wider;
+        background-color: var(--color-warning);
+        color: #000000;
     }
 
     .badge-preparing {
-        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-semibold uppercase tracking-wider;
-        background-color: var(--color-info-bg);
-        color: var(--color-info);
+        @apply inline-flex items-center px-2.5 py-1 rounded-xs text-sm font-bold uppercase tracking-wider;
+        background-color: var(--color-info);
+        color: var(--color-info-fg);
     }
 
     .badge-ready {
-        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-semibold uppercase tracking-wider;
-        background-color: var(--color-success-bg);
-        color: var(--color-success);
+        @apply inline-flex items-center px-2.5 py-1 rounded-xs text-sm font-bold uppercase tracking-wider;
+        background-color: var(--color-success);
+        color: var(--color-success-fg);
     }
 
     .badge-served {
-        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-semibold uppercase tracking-wider;
-        background-color: var(--surface-sunken);
-        color: var(--text-muted);
+        @apply inline-flex items-center px-2.5 py-1 rounded-xs text-sm font-bold uppercase tracking-wider;
+        background-color: #444444;
+        color: #AAAAAA;
     }
 
     .badge-danger {
-        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-semibold uppercase tracking-wider;
+        @apply inline-flex items-center px-2.5 py-1 rounded-xs text-sm font-bold uppercase tracking-wider;
         background-color: var(--color-danger);
         color: var(--color-danger-fg);
     }
 
     .badge-platform {
-        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-bold uppercase tracking-wider;
+        @apply inline-flex items-center px-2.5 py-1 rounded-xs text-sm font-bold uppercase tracking-wider;
         background-color: var(--color-action);
         color: var(--color-action-fg);
     }
@@ -237,7 +234,7 @@ html, body {
     }
     .input-base:focus {
         border-color: var(--border-focus);
-        box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.15);
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
     }
 
     .input-numpad {
@@ -249,6 +246,6 @@ html, body {
     }
     .input-numpad:focus {
         border-color: var(--border-focus);
-        box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.15);
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
     }
 }
