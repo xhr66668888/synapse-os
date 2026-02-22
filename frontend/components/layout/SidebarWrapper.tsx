@@ -5,8 +5,8 @@ import { Sidebar } from './Sidebar';
 import { NetworkStatus } from '../ui/NetworkStatus';
 import { AIAssistantModal } from '../ai-assistant';
 
-// 不需要侧边栏的页面路径
-const noSidebarPaths = ['/login', '/unauthorized'];
+// 不需要侧边栏的页面路径（顾客端全屏终端）
+const noSidebarPaths = ['/login', '/unauthorized', '/kiosk', '/qr-order', '/pickup-screen'];
 
 export function SidebarWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { audioManager } from '@/lib/audio';
 
 export interface KDSOrder {
     id: string;
@@ -34,8 +35,6 @@ export function useKDSWebSocket(options: UseKDSWebSocketOptions) {
     const connect = useCallback(() => {
         const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
         const url = `${wsUrl}/ws/kds/${restaurantId}`;
-
-        // 在开发模式下，如果后端未启动，使用 mock 数据
         const isDev = process.env.NODE_ENV === 'development';
 
         try {
@@ -43,7 +42,7 @@ export function useKDSWebSocket(options: UseKDSWebSocketOptions) {
             wsRef.current = ws;
 
             ws.onopen = () => {
-                console.log('🟢 KDS WebSocket connected');
+                console.log('KDS WebSocket connected');
                 setIsConnected(true);
                 setError(null);
                 reconnectAttempts.current = 0;
@@ -58,21 +57,22 @@ export function useKDSWebSocket(options: UseKDSWebSocketOptions) {
                             setOrders(data.orders || []);
                             break;
 
-                        case 'new_order':
+                        case 'new_order': {
                             const newOrder = data.order as KDSOrder;
                             setOrders((prev) => [newOrder, ...prev]);
                             onNewOrder?.(newOrder);
-                            // 播放提示音
-                            playNotificationSound();
+                            audioManager.playNewOrder();
                             break;
+                        }
 
-                        case 'order_update':
+                        case 'order_update': {
                             const updatedOrder = data.order as KDSOrder;
                             setOrders((prev) =>
                                 prev.map((o) => (o.id === updatedOrder.id ? updatedOrder : o))
                             );
                             onOrderUpdate?.(updatedOrder);
                             break;
+                        }
 
                         case 'order_removed':
                             setOrders((prev) => prev.filter((o) => o.id !== data.orderId));
@@ -87,9 +87,8 @@ export function useKDSWebSocket(options: UseKDSWebSocketOptions) {
             };
 
             ws.onerror = () => {
-                // 静默处理错误，不输出到控制台（在开发模式下后端可能未启动）
                 if (!isDev) {
-                    console.warn('🔴 KDS WebSocket connection unavailable');
+                    console.warn('KDS WebSocket connection unavailable');
                 }
                 setError('WebSocket connection unavailable - using offline mode');
                 setIsConnected(false);
@@ -97,18 +96,15 @@ export function useKDSWebSocket(options: UseKDSWebSocketOptions) {
 
             ws.onclose = (event) => {
                 if (isDev && reconnectAttempts.current === 0) {
-                    // 开发模式首次关闭时静默处理
-                    console.log('ℹ️ KDS WebSocket: Backend not available, using mock data');
+                    console.log('KDS WebSocket: Backend not available, using mock data');
                 } else if (!isDev) {
-                    console.log('🟠 KDS WebSocket closed:', event.code, event.reason);
+                    console.log('KDS WebSocket closed:', event.code, event.reason);
                 }
                 setIsConnected(false);
                 wsRef.current = null;
 
-                // 自动重连（限制重连次数）
                 if (autoReconnect && reconnectAttempts.current < maxReconnectAttempts) {
                     const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
-
                     reconnectTimeoutRef.current = setTimeout(() => {
                         reconnectAttempts.current++;
                         connect();
@@ -116,7 +112,6 @@ export function useKDSWebSocket(options: UseKDSWebSocketOptions) {
                 }
             };
         } catch (e) {
-            // 静默处理连接失败
             if (!isDev) {
                 console.error('Failed to create WebSocket:', e);
             }
@@ -129,12 +124,10 @@ export function useKDSWebSocket(options: UseKDSWebSocketOptions) {
             clearTimeout(reconnectTimeoutRef.current);
             reconnectTimeoutRef.current = null;
         }
-
         if (wsRef.current) {
             wsRef.current.close();
             wsRef.current = null;
         }
-
         setIsConnected(false);
     }, []);
 
@@ -146,14 +139,11 @@ export function useKDSWebSocket(options: UseKDSWebSocketOptions) {
                 status,
             }));
         }
-
-        // 乐观更新
         setOrders((prev) =>
             prev.map((o) => (o.id === orderId ? { ...o, status } : o))
         );
     }, []);
 
-    // 初始连接
     useEffect(() => {
         connect();
         return () => disconnect();
@@ -167,30 +157,4 @@ export function useKDSWebSocket(options: UseKDSWebSocketOptions) {
         reconnect: connect,
         disconnect,
     };
-}
-
-// 播放通知音
-function playNotificationSound() {
-    if (typeof window === 'undefined') return;
-
-    try {
-        // 使用 Web Audio API 生成简单提示音
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        oscillator.frequency.value = 800;
-        oscillator.type = 'sine';
-
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
-    } catch (e) {
-        console.log('Audio notification not available');
-    }
 }

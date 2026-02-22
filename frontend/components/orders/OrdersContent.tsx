@@ -3,23 +3,17 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { StateBadge } from '@/components/ui';
 import {
     Search,
-    Filter,
-    ChevronDown,
     Clock,
     CreditCard,
     User,
     Utensils,
-    CheckCircle2,
-    XCircle,
-    ChefHat,
     Truck,
-    MoreHorizontal,
     Printer
 } from 'lucide-react';
 
-// Mock Sky
 interface Order {
     id: string;
     orderNumber: string;
@@ -40,18 +34,10 @@ const mockOrders: Order[] = [
     { id: '5', orderNumber: '#2024102405', tableNumber: 'C2', items: ['糖醋排骨 x1', '米饭 x1'], total: 60.00, status: 'cancelled', type: 'dine_in', createdAt: '12:15' },
 ];
 
-const statusConfig: Record<string, { label: string; bg: string; text: string; icon: any }> = {
-    pending: { label: '待处理', bg: 'bg-yellow-100', text: 'text-yellow-700', icon: Clock },
-    preparing: { label: '制作中', bg: 'bg-blue-100', text: 'text-blue-700', icon: ChefHat },
-    ready: { label: '待取餐', bg: 'bg-green-100', text: 'text-green-700', icon: CheckCircle2 },
-    completed: { label: '已完成', bg: 'bg-gray-100', text: 'text-gray-600', icon: CheckCircle2 },
-    cancelled: { label: '已取消', bg: 'bg-red-50', text: 'text-red-600', icon: XCircle },
-};
-
-const typeConfig: Record<string, { label: string; icon: any; color: string }> = {
-    dine_in: { label: '堂食', icon: Utensils, color: 'text-blue-500' },
-    takeout: { label: '外带', icon: User, color: 'text-orange-500' },
-    delivery: { label: '外卖', icon: Truck, color: 'text-green-500' },
+const typeLabels: Record<string, string> = {
+    dine_in: '堂食',
+    takeout: '外带',
+    delivery: '外卖',
 };
 
 export function OrdersContent() {
@@ -63,30 +49,31 @@ export function OrdersContent() {
         : mockOrders.filter(order => order.status === filterStatus);
 
     return (
-        <div className="flex bg-bg-secondary h-[calc(100vh-64px)] overflow-hidden">
+        <div className="flex bg-surface-base h-[calc(100vh-64px)] overflow-hidden">
             {/* List Panel */}
-            <div className="w-1/3 min-w-[320px] max-w-md border-r border-border flex flex-col bg-white">
+            <div className="w-1/3 min-w-[320px] max-w-md border-r border-border flex flex-col bg-surface-raised">
                 {/* Search & Filter */}
-                <div className="p-4 border-b border-border/50 space-y-3">
+                <div className="p-3 border-b border-border space-y-2">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                         <input
                             type="text"
                             placeholder="搜索订单号、桌号..."
-                            className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                            className="input-base pl-10"
                         />
                     </div>
-                    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                    <div className="flex gap-1 overflow-x-auto">
                         {['all', 'pending', 'preparing', 'ready'].map(status => (
                             <button
                                 key={status}
                                 onClick={() => setFilterStatus(status)}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${filterStatus === status
-                                        ? 'bg-primary text-white'
-                                        : 'bg-bg-secondary text-text-secondary hover:bg-bg-hover'
-                                    }`}
+                                className={`px-3 py-1.5 rounded-sm text-xs font-bold whitespace-nowrap transition-colors ${
+                                    filterStatus === status
+                                        ? 'bg-action text-action-fg'
+                                        : 'bg-surface-sunken text-text-secondary hover:text-text-primary'
+                                }`}
                             >
-                                {status === 'all' ? '全部' : statusConfig[status]?.label}
+                                {status === 'all' ? '全部' : status === 'pending' ? '待处理' : status === 'preparing' ? '制作中' : '待取餐'}
                             </button>
                         ))}
                     </div>
@@ -94,67 +81,56 @@ export function OrdersContent() {
 
                 {/* Order List */}
                 <div className="flex-1 overflow-y-auto">
-                    {filteredOrders.map(order => {
-                        const StatusIcon = statusConfig[order.status].icon;
-                        const TypeIcon = typeConfig[order.type].icon;
-
-                        return (
-                            <div
-                                key={order.id}
-                                onClick={() => setActiveOrder(order)}
-                                className={`p-4 border-b border-border/50 cursor-pointer transition-colors hover:bg-bg-hover/50 ${activeOrder?.id === order.id ? 'bg-primary/5 border-l-4 border-l-primary' : 'border-l-4 border-l-transparent'
-                                    }`}
-                            >
-                                <div className="flex justify-between items-start mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-bold text-text-primary text-sm">{order.orderNumber}</span>
-                                        {order.tableNumber && (
-                                            <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px] font-bold">
-                                                {order.tableNumber}号
-                                            </span>
-                                        )}
-                                    </div>
-                                    <span className="text-xs text-text-muted font-mono">{order.createdAt}</span>
-                                </div>
-
-                                <div className="flex justify-between items-end">
-                                    <div className="flex items-center gap-2">
-                                        <span className={`px-2 py-0.5 rounded text-[10px] flex items-center gap-1 font-medium ${statusConfig[order.status].bg} ${statusConfig[order.status].text}`}>
-                                            <StatusIcon className="w-3 h-3" /> {statusConfig[order.status].label}
+                    {filteredOrders.map(order => (
+                        <div
+                            key={order.id}
+                            onClick={() => setActiveOrder(order)}
+                            className={`p-3 border-b border-border-light cursor-pointer transition-colors hover:bg-surface-sunken ${
+                                activeOrder?.id === order.id
+                                    ? 'bg-info-bg border-l-[3px] border-l-action'
+                                    : 'border-l-[3px] border-l-transparent'
+                            }`}
+                        >
+                            <div className="flex justify-between items-start mb-1.5">
+                                <div className="flex items-center gap-2">
+                                    <span className="font-bold text-text-primary text-sm font-mono">{order.orderNumber}</span>
+                                    {order.tableNumber && (
+                                        <span className="bg-surface-sunken text-text-secondary px-1.5 py-0.5 rounded-xs text-[10px] font-bold">
+                                            {order.tableNumber}号
                                         </span>
-                                        <TypeIcon className={`w-3 h-3 ${typeConfig[order.type].color}`} />
-                                    </div>
-                                    <span className="font-bold text-text-primary">¥{order.total.toFixed(2)}</span>
+                                    )}
                                 </div>
+                                <span className="text-xs text-text-muted font-mono tabular-nums">{order.createdAt}</span>
                             </div>
-                        );
-                    })}
+                            <div className="flex justify-between items-end">
+                                <StateBadge state={order.status} size="sm" />
+                                <span className="font-bold text-text-primary font-mono tabular-nums text-sm">¥{order.total.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 
             {/* Detail Panel */}
-            <div className="flex-1 bg-bg-secondary p-8 flex flex-col items-center justify-center">
+            <div className="flex-1 bg-surface-base p-6 flex flex-col items-center justify-center">
                 {activeOrder ? (
-                    <div className="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden animate-fade-in border border-border/50">
+                    <div className="w-full max-w-2xl card-base overflow-hidden animate-fade-in">
                         {/* Ticket Header */}
-                        <div className={`p-6 text-white bg-gradient-to-r ${activeOrder.status === 'completed' ? 'from-green-500 to-green-600' :
-                                activeOrder.status === 'cancelled' ? 'from-gray-500 to-gray-600' :
-                                    'from-primary to-primary-dark'
-                            }`}>
-                            <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-2xl font-bold tracking-tight">订单详情</h2>
-                                <div className="flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
+                        <div className="p-5 bg-action text-action-fg">
+                            <div className="flex justify-between items-center mb-3">
+                                <h2 className="text-lg font-bold">订单详情</h2>
+                                <div className="flex items-center gap-1.5 text-sm font-mono tabular-nums opacity-80">
                                     <Clock className="w-4 h-4" />
-                                    <span className="text-sm font-medium">{activeOrder.createdAt}</span>
+                                    {activeOrder.createdAt}
                                 </div>
                             </div>
                             <div className="flex justify-between items-end">
                                 <div>
-                                    <div className="opacity-80 text-sm">订单编号</div>
-                                    <div className="text-3xl font-mono font-bold">{activeOrder.orderNumber}</div>
+                                    <div className="text-xs opacity-70">订单编号</div>
+                                    <div className="text-2xl font-mono font-bold">{activeOrder.orderNumber}</div>
                                 </div>
                                 {activeOrder.tableNumber && (
-                                    <div className="bg-white text-primary px-4 py-2 rounded-xl font-bold shadow-lg">
+                                    <div className="bg-surface-raised text-text-primary px-3 py-1.5 rounded-sm font-bold text-sm">
                                         {activeOrder.tableNumber}号桌
                                     </div>
                                 )}
@@ -162,67 +138,62 @@ export function OrdersContent() {
                         </div>
 
                         {/* Ticket Body */}
-                        <div className="p-8">
-                            <div className="space-y-6">
-                                {/* Customer Info */}
-                                <div className="flex items-center gap-4 p-4 bg-bg-secondary/50 rounded-xl border border-border/50">
-                                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                                        <User className="w-5 h-5" />
-                                    </div>
+                        <div className="p-5">
+                            <div className="space-y-4">
+                                {/* Type & Status */}
+                                <div className="flex items-center gap-3 p-3 bg-surface-sunken rounded-sm">
+                                    <User className="w-5 h-5 text-text-muted" />
                                     <div>
-                                        <div className="text-sm text-text-muted">顾客类型</div>
-                                        <div className="font-medium text-text-primary flex items-center gap-2">
-                                            {typeConfig[activeOrder.type].label}
-                                            <span className="text-xs text-text-secondary font-normal">(普通顾客)</span>
-                                        </div>
+                                        <div className="text-xs text-text-muted">订单类型</div>
+                                        <div className="text-sm font-bold text-text-primary">{typeLabels[activeOrder.type]}</div>
+                                    </div>
+                                    <div className="ml-auto">
+                                        <StateBadge state={activeOrder.status} />
                                     </div>
                                 </div>
 
                                 {/* Items */}
                                 <div>
-                                    <h3 className="text-sm font-medium text-text-muted mb-3 flex items-center gap-2">
-                                        <Utensils className="w-4 h-4" /> 菜品明细
-                                    </h3>
-                                    <div className="divide-y divide-border-light border rounded-xl overflow-hidden">
+                                    <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">菜品明细</h3>
+                                    <div className="border border-border rounded-sm overflow-hidden">
                                         {activeOrder.items.map((item, idx) => (
-                                            <div key={idx} className="p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition-colors">
-                                                <span className="font-medium text-text-primary">{item}</span>
-                                                <span className="text-text-primary font-mono">--</span> {/* Quantity/Price split in mock is tricky, using raw string */}
+                                            <div key={idx} className="p-3 flex justify-between items-center border-b border-border-light last:border-b-0 hover:bg-surface-sunken transition-colors">
+                                                <span className="text-sm text-text-primary">{item}</span>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
 
-                                {/* Payment */}
-                                <div className="flex justify-between items-center pt-4 border-t border-dashed border-gray-300">
-                                    <span className="font-medium text-text-secondary">总计金额</span>
-                                    <span className="text-2xl font-bold text-primary">¥{activeOrder.total.toFixed(2)}</span>
+                                {/* Total */}
+                                <div className="flex justify-between items-center pt-3 border-t border-border">
+                                    <span className="font-bold text-text-secondary">总计金额</span>
+                                    <span className="text-xl font-bold text-text-primary font-mono tabular-nums">¥{activeOrder.total.toFixed(2)}</span>
                                 </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="grid grid-cols-3 gap-4 mt-8">
-                                <button className="btn btn-secondary flex items-center justify-center gap-2">
+                            {/* Actions — confirm right, cancel left */}
+                            <div className="flex items-center justify-between mt-6">
+                                <button className="btn-ghost text-sm">
                                     <Printer className="w-4 h-4" /> 打印小票
                                 </button>
-                                {activeOrder.status === 'pending' && (
-                                    <>
-                                        <button className="btn btn-secondary text-error hover:bg-red-50 hover:border-red-100">取消订单</button>
-                                        <button className="btn btn-primary">接单制作</button>
-                                    </>
-                                )}
-                                {activeOrder.status === 'preparing' && (
-                                    <button className="btn btn-primary col-span-2">制作完成</button>
-                                )}
+                                <div className="flex gap-2">
+                                    {activeOrder.status === 'pending' && (
+                                        <>
+                                            <button className="btn-danger text-sm">取消订单</button>
+                                            <button className="btn-action text-sm">接单制作</button>
+                                        </>
+                                    )}
+                                    {activeOrder.status === 'preparing' && (
+                                        <button className="btn-success text-sm">制作完成</button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
                 ) : (
                     <div className="text-center text-text-muted">
-                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <CreditCard className="w-10 h-10 text-gray-400" />
-                        </div>
-                        <p className="text-lg font-medium">选择左侧订单查看详情</p>
+                        <CreditCard className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                        <p className="text-sm">选择左侧订单查看详情</p>
                     </div>
                 )}
             </div>

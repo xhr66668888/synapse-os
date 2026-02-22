@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import plugin from 'tailwindcss/plugin';
 
 const config: Config = {
     content: [
@@ -7,96 +8,111 @@ const config: Config = {
     ],
     theme: {
         extend: {
-            // FlymeOS / Apple Style Colors
+            // 语义色彩体系 — 色彩即状态，没有例外
             colors: {
-                // Flyme Blue / Apple Blue (Vibrant & Trustworthy)
-                primary: {
-                    DEFAULT: '#007AFF', // Apple Blue preference
-                    light: '#47A1FF',
-                    dark: '#0055B3',
-                    50: '#F0F7FF',
-                    100: '#E0F0FF',
-                    200: '#BAE0FF',
+                // 主操作（近黑色）
+                action: {
+                    DEFAULT: '#1A1A1A',
+                    fg: '#FFFFFF',
+                    hover: '#333333',
                 },
-                // Status Colors (Softer, Pastel-like)
+                // 成功/完成/上架/已支付/已上菜
                 success: {
-                    DEFAULT: '#34C759', // Apple Green
-                    bg: '#EAF9ED',
+                    DEFAULT: '#00A550',
+                    fg: '#FFFFFF',
+                    bg: 'rgba(0, 165, 80, 0.12)',
                 },
+                // 处理中/待接单/制作中
                 warning: {
-                    DEFAULT: '#FF9F0A', // Apple Orange
-                    bg: '#FFF5E5',
+                    DEFAULT: '#FF8C00',
+                    fg: '#1A1A1A',
+                    bg: 'rgba(255, 140, 0, 0.12)',
                 },
-                error: {
-                    DEFAULT: '#FF3B30', // Apple Red
-                    bg: '#FFEBEA',
+                // 报错/缺货/下架/催单/取消
+                danger: {
+                    DEFAULT: '#CC1100',
+                    fg: '#FFFFFF',
+                    bg: 'rgba(204, 17, 0, 0.12)',
                 },
-                // Backgrounds (Clean, Minimalist)
-                bg: {
-                    primary: '#FFFFFF',
-                    secondary: '#F5F5F7', // Apple System Gray 6
-                    tertiary: '#FFFFFF', // Cards are white on gray bg
-                    hover: '#F2F2F7',
-                    active: '#E5E5EA',
+                // 信息提示/平台标识
+                info: {
+                    DEFAULT: '#005BBB',
+                    fg: '#FFFFFF',
+                    bg: 'rgba(0, 91, 187, 0.12)',
                 },
-                // Text (High Contrast but Soft)
+                // 表面色
+                surface: {
+                    base: '#F0EFEB',
+                    raised: '#FFFFFF',
+                    sunken: '#E4E3DF',
+                    dark: '#1A1A1A',
+                    'dark-2': '#2A2A2A',
+                    'dark-3': '#363636',
+                },
+                // 文字色
                 text: {
-                    primary: '#1D1D1F', // Apple Gray
-                    secondary: '#86868B',
-                    muted: '#AEAEB2',
-                    placeholder: '#C7C7CC',
+                    primary: '#1A1A1A',
+                    secondary: '#5A5A5A',
+                    muted: '#8A8A8A',
+                    disabled: '#BBBBBB',
+                    inverse: '#FFFFFF',
                 },
-                // Borders
+                // 边框色
                 border: {
-                    DEFAULT: '#E5E5EA',
-                    light: '#F2F2F7',
-                    dark: '#C7C7CC',
+                    DEFAULT: '#CECECE',
+                    strong: '#8A8A8A',
+                    focus: '#1A1A1A',
+                    light: '#E4E3DF',
                 },
             },
-            // Radius: Squircle-like
+            // 扁平工业风圆角
             borderRadius: {
-                'xs': '4px',
-                'sm': '8px',
-                'md': '12px',
-                'lg': '16px',
-                'xl': '20px',
-                '2xl': '24px',
-                '3xl': '32px',
+                'xs': '2px',
+                'sm': '4px',
+                'md': '6px',
+                'lg': '8px',
             },
-            // Shadows: Diffused & Multi-layer
+            // 克制的阴影
             boxShadow: {
-                'card': '0 2px 8px rgba(0, 0, 0, 0.04), 0 8px 16px rgba(0, 0, 0, 0.01)',
-                'hover': '0 8px 24px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.02)',
-                'lg': '0 12px 32px rgba(0, 0, 0, 0.08)',
-                'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                'card': '0 1px 3px rgba(0, 0, 0, 0.12)',
+                'raised': '0 2px 8px rgba(0, 0, 0, 0.16)',
             },
-            // Font - Synapse OS 品牌字体
+            // 字体
             fontFamily: {
                 sans: ['SynapseFont', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
             },
-            // Animation
+            // 动画
             animation: {
-                'fade-in': 'fadeIn 0.3s ease-out',
-                'scale-in': 'scaleIn 0.2s cubic-bezier(0.2, 0, 0.2, 1)',
-                'slide-up': 'slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                'fade-in': 'fadeIn 0.2s ease-out',
+                'kds-blink': 'kdsBlink 1s ease-in-out infinite',
+                'edge-flash': 'edgeFlash 2s ease-in-out infinite',
             },
             keyframes: {
                 fadeIn: {
                     '0%': { opacity: '0' },
                     '100%': { opacity: '1' },
                 },
-                scaleIn: {
-                    '0%': { opacity: '0', transform: 'scale(0.95)' },
-                    '100%': { opacity: '1', transform: 'scale(1)' },
+                kdsBlink: {
+                    '0%, 100%': { opacity: '1' },
+                    '50%': { opacity: '0.4' },
                 },
-                slideUp: {
-                    '0%': { opacity: '0', transform: 'translateY(10px)' },
-                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                edgeFlash: {
+                    '0%, 100%': { boxShadow: 'inset 0 0 0 0px transparent' },
+                    '50%': { boxShadow: 'inset 0 0 0 4px #CC1100' },
                 },
             },
         },
     },
-    plugins: [],
+    plugins: [
+        plugin(function ({ addUtilities }) {
+            addUtilities({
+                '.tabular-nums': {
+                    'font-variant-numeric': 'tabular-nums',
+                },
+            });
+        }),
+    ],
 };
 
 export default config;

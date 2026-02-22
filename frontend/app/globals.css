@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Font - Synapse OS 品牌字体 */
+/* Custom Font - Synapse OS */
 @font-face {
     font-family: 'SynapseFont';
     src: url('/myfont.ttf') format('truetype');
@@ -11,20 +11,70 @@
     font-display: swap;
 }
 
-/* 全局应用自定义字体 */
+/* 全局字体 */
 * {
     font-family: 'SynapseFont', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
-/* Base Styles */
+/* ========== CSS 自定义属性（语义色） ========== */
+:root {
+    --color-action: #1A1A1A;
+    --color-action-fg: #FFFFFF;
+    --color-action-hover: #333333;
+    --color-success: #00A550;
+    --color-success-fg: #FFFFFF;
+    --color-success-bg: rgba(0, 165, 80, 0.12);
+    --color-warning: #FF8C00;
+    --color-warning-fg: #1A1A1A;
+    --color-warning-bg: rgba(255, 140, 0, 0.12);
+    --color-danger: #CC1100;
+    --color-danger-fg: #FFFFFF;
+    --color-danger-bg: rgba(204, 17, 0, 0.12);
+    --color-info: #005BBB;
+    --color-info-fg: #FFFFFF;
+    --color-info-bg: rgba(0, 91, 187, 0.12);
+
+    --surface-base: #F0EFEB;
+    --surface-raised: #FFFFFF;
+    --surface-sunken: #E4E3DF;
+    --surface-dark: #1A1A1A;
+    --surface-dark-2: #2A2A2A;
+    --surface-dark-3: #363636;
+
+    --text-primary: #1A1A1A;
+    --text-secondary: #5A5A5A;
+    --text-muted: #8A8A8A;
+    --text-disabled: #BBBBBB;
+    --text-inverse: #FFFFFF;
+
+    --border-default: #CECECE;
+    --border-strong: #8A8A8A;
+    --border-focus: #1A1A1A;
+    --border-light: #E4E3DF;
+}
+
+/* KDS 终端主题覆盖 */
+[data-terminal="kds"] {
+    --surface-base: #1A1A1A;
+    --surface-raised: #2A2A2A;
+    --surface-sunken: #111111;
+    --text-primary: #F0EFEB;
+    --text-secondary: #AAAAAA;
+    --text-muted: #777777;
+    --border-default: #404040;
+    --border-light: #333333;
+}
+
+/* ========== Base Styles ========== */
 html, body {
     font-family: 'SynapseFont', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    @apply bg-bg-secondary text-text-primary;
+    background-color: var(--surface-base);
+    color: var(--text-primary);
 }
 
-/* Custom Scrollbar (Minimalist) */
+/* Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -35,54 +85,170 @@ html, body {
 }
 
 ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
+    background: var(--border-default);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-strong);
 }
 
 /* Selection */
 ::selection {
-    @apply bg-primary/20 text-primary-dark;
+    background-color: rgba(0, 91, 187, 0.2);
+    color: var(--text-primary);
 }
 
-/* Component Layers */
+/* ========== Component Layer ========== */
 @layer components {
-    .btn {
-        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed select-none;
+    /* --- 按钮系统 --- */
+    .btn-action {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-bold
+               bg-action text-action-fg rounded-sm
+               transition-colors duration-100
+               disabled:opacity-50 disabled:cursor-not-allowed select-none;
+        min-height: 44px;
+    }
+    .btn-action:hover:not(:disabled) {
+        background-color: var(--color-action-hover);
+    }
+    .btn-action:active:not(:disabled) {
+        background-color: #000000;
     }
 
-    .btn-primary {
-        @apply bg-primary text-white shadow-lg shadow-primary/30 hover:bg-primary-dark hover:shadow-primary/40;
+    .btn-action-sm {
+        @apply inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold
+               bg-action text-action-fg rounded-sm
+               transition-colors duration-100
+               disabled:opacity-50 disabled:cursor-not-allowed select-none;
+        min-height: 32px;
+    }
+    .btn-action-sm:hover:not(:disabled) {
+        background-color: var(--color-action-hover);
     }
 
-    .btn-secondary {
-        @apply bg-white text-text-primary border border-border hover:bg-bg-hover hover:border-gray-300 shadow-sm;
+    .btn-danger {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-bold
+               bg-danger text-danger-fg rounded-sm
+               transition-colors duration-100
+               disabled:opacity-50 disabled:cursor-not-allowed select-none;
+        min-height: 44px;
+    }
+    .btn-danger:hover:not(:disabled) {
+        background-color: #AA0E00;
+    }
+    .btn-danger:active:not(:disabled) {
+        background-color: #880B00;
+    }
+
+    .btn-success {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-bold
+               bg-success text-success-fg rounded-sm
+               transition-colors duration-100
+               disabled:opacity-50 disabled:cursor-not-allowed select-none;
+        min-height: 44px;
+    }
+    .btn-success:hover:not(:disabled) {
+        background-color: #008A42;
+    }
+    .btn-success:active:not(:disabled) {
+        background-color: #007038;
     }
 
     .btn-ghost {
-        @apply text-text-secondary hover:bg-bg-active hover:text-text-primary;
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-bold
+               bg-transparent text-text-primary border border-border rounded-sm
+               transition-colors duration-100
+               disabled:opacity-50 disabled:cursor-not-allowed select-none;
+        min-height: 44px;
+    }
+    .btn-ghost:hover:not(:disabled) {
+        background-color: var(--surface-sunken);
     }
 
-    .card {
-        @apply bg-white rounded-2xl border border-border/50 shadow-card hover:shadow-hover transition-shadow duration-300;
+    /* --- 徽章/状态系统 --- */
+    .badge-pending {
+        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-semibold uppercase tracking-wider;
+        background-color: var(--color-warning-bg);
+        color: var(--color-warning);
     }
 
-    .input-field {
-        @apply w-full px-4 py-2.5 bg-bg-secondary border border-transparent rounded-xl text-sm transition-all duration-200;
+    .badge-preparing {
+        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-semibold uppercase tracking-wider;
+        background-color: var(--color-info-bg);
+        color: var(--color-info);
     }
 
-    .input-field:focus {
-        @apply bg-white border-primary ring-4 ring-primary/10 outline-none;
+    .badge-ready {
+        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-semibold uppercase tracking-wider;
+        background-color: var(--color-success-bg);
+        color: var(--color-success);
     }
 
-    .badge {
-        @apply inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold tracking-wide;
+    .badge-served {
+        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-semibold uppercase tracking-wider;
+        background-color: var(--surface-sunken);
+        color: var(--text-muted);
     }
-}
 
-/* Glassmorphism Utilities */
-.glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20;
-}
+    .badge-danger {
+        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-semibold uppercase tracking-wider;
+        background-color: var(--color-danger);
+        color: var(--color-danger-fg);
+    }
 
-.glass-dark {
-    @apply bg-black/60 backdrop-blur-md border border-white/10 text-white;
+    .badge-platform {
+        @apply inline-flex items-center px-2 py-0.5 rounded-xs text-xs font-bold uppercase tracking-wider;
+        background-color: var(--color-action);
+        color: var(--color-action-fg);
+    }
+
+    /* --- 卡片系统 --- */
+    .card-base {
+        @apply bg-surface-raised rounded-md shadow-card;
+        border: 1px solid var(--border-default);
+    }
+
+    .card-flat {
+        @apply bg-surface-raised rounded-md;
+        border: 1px solid var(--border-default);
+    }
+
+    .card-dark {
+        background-color: var(--surface-dark-2, #2A2A2A);
+        border: 1px solid #404040;
+        border-radius: 0;
+    }
+
+    .card-urgent {
+        background-color: var(--surface-dark-2, #2A2A2A);
+        border: 2px solid var(--color-danger);
+        border-radius: 0;
+        animation: kdsBlink 1s ease-in-out infinite;
+    }
+
+    /* --- 输入系统 --- */
+    .input-base {
+        @apply w-full px-3 py-2 bg-surface-raised text-text-primary text-sm rounded-sm;
+        border: 1px solid var(--border-default);
+        min-height: 40px;
+        outline: none;
+        transition: border-color 0.1s;
+    }
+    .input-base:focus {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.15);
+    }
+
+    .input-numpad {
+        @apply w-full px-3 bg-surface-raised text-text-primary font-mono tabular-nums text-center font-bold rounded-sm;
+        border: 1px solid var(--border-default);
+        min-height: 64px;
+        font-size: 24px;
+        outline: none;
+    }
+    .input-numpad:focus {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.15);
+    }
 }
